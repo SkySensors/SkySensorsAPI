@@ -13,3 +13,5 @@
 /obj
 /bin
 /src/SkySensorsAPI.DataAccess/bin/Debug/net8.0
+/src/SkySensorsAPI.DataAccess/obj
+/src/.vs/ProjectEvaluation
