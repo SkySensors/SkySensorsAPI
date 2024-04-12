@@ -16,4 +16,4 @@ jobs:
 
       - name: Build and test
         working-directory: ./src/
-        run: docker compose --file './src/docker-compose.yml' --file './src/docker-compose.override.yml' up --build --abort-on-container-exit --exit-code-from sky-sensors-api.tests sky-sensors-api.tests
+        run: docker compose --file './src/docker-compose.yml' --file './docker-compose.override.yml' up --build --abort-on-container-exit --exit-code-from sky-sensors-api.tests sky-sensors-api.tests
