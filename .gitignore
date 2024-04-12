@@ -3,3 +3,8 @@
 ################################################################################
 
 /src/.vs/SkySensorsAPI
+/src/SkySensorsAPI/.vs
+/src/SkySensorsAPI/bin/Debug/net8.0
+/src/SkySensorsAPI/obj
+/src/SkySensorsAPI.Tests/bin/Debug/net8.0
+/src/SkySensorsAPI.Tests/obj
