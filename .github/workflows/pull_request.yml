@@ -15,12 +15,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build solution
+        working-directory: ./src/
         run: dotnet build
 
       - name: Run API
-        run: | 
-          cd ./src/SkySensorsAPI/
-          dotnet run
+        working-directory: ./src/SkySensorsAPI/
+        run: dotnet run
 
       - name: Run Tests
+        working-directory: ./src/
         run: dotnet tests
