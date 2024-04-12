@@ -1,0 +1,17 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/src/.vs/SkySensorsAPI
+/src/SkySensorsAPI/.vs
+/src/SkySensorsAPI/bin/Debug/net8.0
+/src/SkySensorsAPI/obj
+/src/SkySensorsAPI.Tests/bin/Debug/net8.0
+/src/SkySensorsAPI.Tests/obj
+
+/vs
+/obj
+/bin
+/src/SkySensorsAPI.DataAccess/bin/Debug/net8.0
+/src/SkySensorsAPI.DataAccess/obj
+/src/.vs/ProjectEvaluation

@@ -1,0 +1,8 @@
+services:
+  sky-sensors-api:
+    ports:
+      - "8080:8080"
+
+  sky-sensors-api.tests:
+    environment:
+      - ApiUrl=http://sky-sensors-api:8080
