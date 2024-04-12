@@ -9,19 +9,11 @@ jobs:
   build_and_test:
     name: Build and test
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Build solution
+      - name: Build and test
         working-directory: ./src/
-        run: dotnet build
-
-      - name: Run API
-        working-directory: ./src/SkySensorsAPI/
-        run: dotnet run
-
-      - name: Run Tests
-        working-directory: ./src/
-        run: dotnet tests
+        run: docker compose --file './src/docker-compose.yml' --file './src/docker-compose.override.yml' up --build --abort-on-container-exit --exit-code-from sky-sensors-api.tests sky-sensors-api.tests

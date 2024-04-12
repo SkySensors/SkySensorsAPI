@@ -1,0 +1,39 @@
+services:
+  sky-sensors-api:
+    container_name: sky-sensors-api
+    image: sky-sensors-api:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:5000/healthcheck"
+        ]
+      interval: 1s
+      timeout: 1s
+      retries: 30
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    user: 1001:1001
+
+  sky-sensors-api.tests:
+    container_name: sky-sensors-api.tests
+    image: sky-sensors-api.tests:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: 'dotnet test SkySensorsAPI.sln -c Release --no-restore --no-build'
+    depends_on:
+      - sky-sensors-api
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
