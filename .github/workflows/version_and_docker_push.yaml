@@ -116,3 +116,4 @@ jobs:
                 url: 'https://portainer.viften.elkok.dk/api/stacks/webhooks/499d367b-2212-40f4-9981-4b9c7d18c57e'
                 method: 'POST'
                 data: ''
+                preventFailureOnNoResponse: 'true'
