@@ -8,3 +8,8 @@
 /src/SkySensorsAPI/obj
 /src/SkySensorsAPI.Tests/bin/Debug/net8.0
 /src/SkySensorsAPI.Tests/obj
+
+/vs
+/obj
+/bin
+/src/SkySensorsAPI.DataAccess/bin/Debug/net8.0
