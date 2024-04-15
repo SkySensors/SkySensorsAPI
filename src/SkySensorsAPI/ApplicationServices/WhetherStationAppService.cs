@@ -20,9 +20,9 @@ public class WhetherStationAppService(
         return wheaterStation != null;
     }
 
-    public async Task<WeatherStationDTO> GetWeatherStation(string macAddress, DateTime measurementStartDate, DateTime measurementEndDate)
+    public async Task<WeatherStation> GetWeatherStation(string macAddress, DateTime measurementStartDate, DateTime measurementEndDate)
     {
-        return new WeatherStationDTO { };
+        return new WeatherStation { };
     }
 
     public async Task<bool> AddWeatherStation(WeatherStation weatherStation)
