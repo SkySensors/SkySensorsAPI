@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkySensorsAPI", "SkySensors
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkySensorsAPI.Tests", "SkySensorsAPI.Tests\SkySensorsAPI.Tests.csproj", "{594E5277-7060-4E68-A5E8-4C09880EC284}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkySensorsAPI.DataAccess", "SkySensorsAPI.DataAccess\SkySensorsAPI.DataAccess.csproj", "{34239206-EED4-46C7-9EFF-D389457851EC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{594E5277-7060-4E68-A5E8-4C09880EC284}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{594E5277-7060-4E68-A5E8-4C09880EC284}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{594E5277-7060-4E68-A5E8-4C09880EC284}.Release|Any CPU.Build.0 = Release|Any CPU
-		{34239206-EED4-46C7-9EFF-D389457851EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34239206-EED4-46C7-9EFF-D389457851EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34239206-EED4-46C7-9EFF-D389457851EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34239206-EED4-46C7-9EFF-D389457851EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

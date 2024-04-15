@@ -1,6 +1,6 @@
-﻿using SkySensorsAPI.DataAccess.Services;
+﻿using SkySensorsAPI.InfrastureServices;
 
-namespace SkySensorsAPI.DataAccess.Repositories;
+namespace SkySensorsAPI.Repositories;
 
 public interface IWheatherStationRepository
 {
@@ -8,7 +8,7 @@ public interface IWheatherStationRepository
 }
 
 public class WheatherStationRepository(
-	IPostgreSqlService postgreSqlService) : IWheatherStationRepository
+	IPostgreSqlInfrastureService postgreSqlService) : IWheatherStationRepository
 {
 	public async Task<object> GetWheaterStation()
 	{
