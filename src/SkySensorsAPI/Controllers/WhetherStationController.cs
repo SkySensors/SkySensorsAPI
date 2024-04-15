@@ -8,9 +8,22 @@ namespace SkySensorsAPI.Controllers;
 public class WhetherStationController(
 	IWhetherStationAppService weatherStationService) : ControllerBase
 {
-	[HttpGet]
-	public async Task<IActionResult> GetDummyValue()
-	{
-		return await weatherStationService.GetDummyValue() ? Ok() : NotFound();
-	}
+    [HttpGet]
+    public async Task<IActionResult> GetWeatherStation()
+    {
+        return await weatherStationService.GetDummyValue() ? Ok() : NotFound();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddSensorValues()
+    {
+        return await weatherStationService.GetDummyValue() ? Ok() : NotFound();
+    }
+
+    [HttpGet("handshake")]
+    public async Task<IActionResult> MakeWeatherStationHandshake()
+    {
+        return await weatherStationService.GetDummyValue() ? Ok() : NotFound();
+    }
+
 }
