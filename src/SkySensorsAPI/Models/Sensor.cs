@@ -1,9 +1,12 @@
-﻿namespace SkySensorsAPI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace SkySensorsAPI.Models
 {
     public class Sensor
     {
-        public SensorType Type { get; set; }
+		[JsonConverter(typeof(JsonStringEnumConverter))] // Convert the Enum to string 
+		public SensorType Type { get; set; }
         public float CalibrationOffset { get; set; }
-        public SensorValue[] SensorValue { get; set; }
+        public List<SensorValue> SensorValues { get; set; }
     }
 }
