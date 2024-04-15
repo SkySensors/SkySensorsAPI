@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NSubstitute;
 using SkySensorsAPI.ApplicationServices;
-using SkySensorsAPI.DataAccess.Repositories;
+using SkySensorsAPI.Repositories;
 
 namespace SkySensorsAPI.Tests.UnitTests.Services;
 
