@@ -1,6 +1,7 @@
-using ImageBot.Core;
 using Serilog;
-using SkySensorsAPI.Services;
+using SkySensorsAPI.ApplicationServices;
+using SkySensorsAPI.InfrastureServices;
+using SkySensorsAPI.Repositories;
 
 Log.Logger = new LoggerConfiguration()
 	.Enrich.FromLogContext()
@@ -10,14 +11,14 @@ Log.Logger = new LoggerConfiguration()
 try
 {
 	var builder = WebApplication.CreateBuilder(args);
-	builder.Services.AddDataAccess();
-	builder.Services.AddSingleton<IWhetherStationService, WhetherStationSqlService>();
+	builder.Services.AddSingleton<IWhetherStationAppService, WhetherStationAppService>();
+	builder.Services.AddSingleton<IPostgreSqlInfrastureService, PostgreSqlInfrastureService>();
+	builder.Services.AddSingleton<IWheatherStationRepository, WheatherStationRepository>();
 	builder.Services.AddControllers();
 	builder.Services.AddSwaggerGen();
 	builder.Services.AddHealthChecks();
 	var app = builder.Build();
 
-	app.UseDataAccess();
 	app.UseRouting();
 	app.MapControllers();
 	app.UseDeveloperExceptionPage();

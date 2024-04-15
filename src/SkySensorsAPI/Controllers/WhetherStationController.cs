@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SkySensorsAPI.Services;
+using SkySensorsAPI.ApplicationServices;
 
 namespace SkySensorsAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class WhetherStationController(
-	IWhetherStationService weatherStationService) : ControllerBase
+	IWhetherStationAppService weatherStationService) : ControllerBase
 {
 	[HttpGet]
 	public async Task<IActionResult> GetDummyValue()

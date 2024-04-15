@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Newtonsoft.Json;
 using System.Net;
 
 namespace SkySensorsAPI.Tests.IntegrationTests.Controllers;
