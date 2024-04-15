@@ -1,11 +1,15 @@
-﻿using Npgsql;
+﻿using Dapper;
+using Npgsql;
+using NpgsqlTypes;
+using SkySensorsAPI.Utilities;
 using System.Data;
+using System.Net.NetworkInformation;
 
 namespace SkySensorsAPI.InfrastureServices;
 
 public interface IPostgreSqlInfrastureService
 {
-	T ExecuteQueryAsync<T>(Func<IDbConnection, T> query);
+	Task<T> ExecuteQueryAsync<T>(Func<IDbConnection, Task<T>> query);
 	bool ExecuteProcedure(Action<IDbConnection> proc);
 }
 
@@ -14,10 +18,13 @@ public class PostgreSqlInfrastureService(
 	ILogger<PostgreSqlInfrastureService> logger) : IPostgreSqlInfrastureService
 {
 
+
 	public bool ExecuteProcedure(Action<IDbConnection> proc)
 	{
 		try
 		{
+			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+			SqlMapper.AddTypeHandler(new NpgsqlTypeHandler<PhysicalAddress>(NpgsqlDbType.MacAddr));
 			using IDbConnection con = new NpgsqlConnection(configuration.GetConnectionString("Postgres"));
 			proc(con);
 			return true;
@@ -29,12 +36,14 @@ public class PostgreSqlInfrastureService(
 		}
 	}
 
-	public T ExecuteQueryAsync<T>(Func<IDbConnection, T> query)
+	public async Task<T> ExecuteQueryAsync<T>(Func<IDbConnection, Task<T>> query)
 	{
 		try
 		{
+			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+			SqlMapper.AddTypeHandler(new NpgsqlTypeHandler<PhysicalAddress>(NpgsqlDbType.MacAddr));
 			using IDbConnection con = new NpgsqlConnection(configuration.GetConnectionString("Postgres"));
-			return query(con);
+			return await query(con);
 		}
 		catch (Exception ex)
 		{
