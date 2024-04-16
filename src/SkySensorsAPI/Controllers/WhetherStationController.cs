@@ -6,23 +6,23 @@ namespace SkySensorsAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WhetherStationController(
-	IWhetherStationAppService weatherStationService) : ControllerBase
+public class WheatherStationController(
+	IWheatherStationAppService weatherStationService) : ControllerBase
 {
 	[HttpGet]
 	public async Task<IActionResult> GetWeatherStation(string macAddress = "00-b0-d0-63-c2-26")
 	{
-		WeatherStation? weatherStation = await weatherStationService.GetWeatherStation(macAddress);
+        if (macAddress == null)
+        {
+			List<WeatherStationDTO> weatherStations = await weatherStationService.GetWeatherStations();
 
+			return weatherStations == null ? NotFound() : Ok(weatherStations);
+		}		
+		
+		WeatherStationDTO? weatherStation = await weatherStationService.GetWeatherStation(macAddress);
 		return weatherStation == null ? NotFound() : Ok(weatherStation);
 	}
-	[HttpGet]
-	public async Task<IActionResult> GetWeatherStations()
-	{
-		List<WeatherStation> weatherStations = await weatherStationService.GetWeatherStations();
 
-		return weatherStations == null ? NotFound() : Ok(weatherStations);
-	}
 	[HttpPost]
     public async Task<IActionResult> AddSensorValues()
     {
@@ -34,5 +34,13 @@ public class WhetherStationController(
     {
         return await weatherStationService.GetDummyValue() ? Ok() : NotFound();
     }
+
+	[HttpGet("list")]
+	public async Task<IActionResult> GetWeatherStationLists()
+	{
+		IEnumerable<BasicWeatherStationDTO> weatherStations = await weatherStationService.GetWeatherStationLists();
+
+		return weatherStations == null ? NotFound() : Ok(weatherStations);
+	}
 
 }

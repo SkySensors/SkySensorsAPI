@@ -6,21 +6,21 @@ using SkySensorsAPI.Repositories;
 
 namespace SkySensorsAPI.Tests.UnitTests.Services;
 
-internal class WhetherStationServiceTests
+internal class WheatherStationServiceTests
 {
 	[Test, AutoDomainData]
 	public async Task GetDummyValue_WhenEverythingIsValid_ReturnsTrue(
 		[Frozen] IWheatherStationRepository wheatherStationRepository,
-		WhetherStationAppService sut)
+		WheatherStationAppService sut)
 	{
 		// Arrange
-		wheatherStationRepository.GetWheaterStation().Returns(new object());
+		wheatherStationRepository.GetWheaterStations().Returns(new object());
 
 		// Act
 		bool result = await sut.GetDummyValue();
 
 		// Assert
 		result.Should().BeTrue();
-		wheatherStationRepository.Received().GetWheaterStation().Should().NotBeNull();
+		wheatherStationRepository.Received().GetWheaterStations().Should().NotBeNull();
 	}
 }

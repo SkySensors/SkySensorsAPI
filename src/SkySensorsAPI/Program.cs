@@ -11,7 +11,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
 	var builder = WebApplication.CreateBuilder(args);
-	builder.Services.AddSingleton<IWhetherStationAppService, WhetherStationAppService>();
+	builder.Services.AddSingleton<IWheatherStationAppService, WheatherStationAppService>();
 	builder.Services.AddSingleton<IPostgreSqlInfrastureService, PostgreSqlInfrastureService>();
 	builder.Services.AddSingleton<IWheatherStationRepository, WheatherStationRepository>();
 	builder.Services.AddControllers();

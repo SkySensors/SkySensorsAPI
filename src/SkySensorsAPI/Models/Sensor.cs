@@ -1,6 +1,6 @@
 ﻿namespace SkySensorsAPI.Models
 {
-    public class SensorDB
+    public class Sensor
     {
         public int Id { get; set; }
         public SensorType Type { get; set; }

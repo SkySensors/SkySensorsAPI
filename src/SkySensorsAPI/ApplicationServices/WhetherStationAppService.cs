@@ -1,20 +1,23 @@
 ﻿using SkySensorsAPI.Models;
 using SkySensorsAPI.Repositories;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace SkySensorsAPI.ApplicationServices;
 
-public interface IWhetherStationAppService
+public interface IWheatherStationAppService
 {
     public Task<bool> GetDummyValue();
-    public Task<WeatherStation> GetWeatherStation(string macAddress);
+    public Task<WeatherStationDTO> GetWeatherStation(string macAddress);
 
-	public Task<List<WeatherStation>> GetWeatherStations();
+	public Task<List<WeatherStationDTO>> GetWeatherStations();
+
+	public Task<IEnumerable<BasicWeatherStationDTO>> GetWeatherStationLists();
 }
 
-public class WhetherStationAppService(
+public class WheatherStationAppService(
     IWheatherStationRepository wheatherStationRepository,
-    ILogger<WhetherStationAppService> logger) : IWhetherStationAppService
+    ILogger<WheatherStationAppService> logger) : IWheatherStationAppService
 {
     public async Task<bool> GetDummyValue()
     {
@@ -24,32 +27,32 @@ public class WhetherStationAppService(
         return wheaterStation != null;
     }
 
-    public async Task<WeatherStation> GetWeatherStation(string macAddress)
+    public async Task<WeatherStationDTO> GetWeatherStation(string macAddress)
     {
-        WeatherStationDB wsd = await wheatherStationRepository.GetWheaterStation(macAddress);
-		IEnumerable<SensorDB> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(macAddress);
+        WeatherStation wsd = await wheatherStationRepository.GetWheaterStation(macAddress);
+		IEnumerable<Sensor> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(macAddress);
 
         List<SensorDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas);
 
 
-        return MapWeatherStationToDTO(wsd, sensors);
+        return WeatherStation.ToWeatherStationDTO(wsd, sensors);
     }
-	public async Task<List<WeatherStation>> GetWeatherStations()
+	public async Task<List<WeatherStationDTO>> GetWeatherStations()
 	{
-		IEnumerable<WeatherStationDB> wsds = await wheatherStationRepository.GetWheaterStations();
+		IEnumerable<WeatherStation> wsds = await wheatherStationRepository.GetWheaterStations();
 
-		List<WeatherStation> weatherStations = [];
-		foreach (WeatherStationDB wsd in wsds)
+		List<WeatherStationDTO> weatherStations = [];
+		foreach (WeatherStation wsd in wsds)
 		{
-			IEnumerable<SensorDB> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(wsd.MacAddress.ToString());
+			IEnumerable<Sensor> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(wsd.MacAddress.ToString());
 			List<SensorDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas);
-			weatherStations.Add(MapWeatherStationToDTO(wsd,sensors));
+			weatherStations.Add(WeatherStation.ToWeatherStationDTO(wsd,sensors));
 		}
 
 		return weatherStations;
 	}
 
-	public async Task<bool> AddWeatherStation(WeatherStation weatherStation)
+	public async Task<bool> AddWeatherStation(WeatherStationDTO weatherStation)
     {
         return false;
     }
@@ -59,12 +62,12 @@ public class WhetherStationAppService(
         return false;
     }
 
-	private async Task<List<SensorDTO>> MapSensorsAndSensorValuesToDTO(IEnumerable<SensorDB> sensorDBs)
+	private async Task<List<SensorDTO>> MapSensorsAndSensorValuesToDTO(IEnumerable<Sensor> sensorDBs)
 	{
 		List<SensorDTO> sensors = [];
 
 		// Fetch all sensor values foreach sensor 
-		foreach (SensorDB sensorData in sensorDBs)
+		foreach (Sensor sensorData in sensorDBs)
 		{
 			IEnumerable<SensorValueDTO> values = await wheatherStationRepository.GetSensorValuesBySensorId(sensorData.Id);
 
@@ -79,13 +82,9 @@ public class WhetherStationAppService(
 		return sensors;
 	}
 
-	private static WeatherStation MapWeatherStationToDTO(WeatherStationDB weatherStation, List<SensorDTO> sensors)
+	public async Task<IEnumerable<BasicWeatherStationDTO>> GetWeatherStationLists()
 	{
-		return new WeatherStation()
-		{
-			MacAddress = weatherStation.MacAddress,
-			GpsLocation = new GpsLocation() { Latitude = weatherStation.Latitude, Longitude = weatherStation.Longitude },
-			Sensors = sensors,
-		};
+		IEnumerable<WeatherStation> wsds = await wheatherStationRepository.GetWheaterStations();
+		return wsds.Select(w => WeatherStation.ToBasicWeatherStationDTO(w));
 	}
 }
