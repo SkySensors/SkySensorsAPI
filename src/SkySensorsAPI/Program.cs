@@ -17,10 +17,20 @@ try
 	builder.Services.AddControllers();
 	builder.Services.AddSwaggerGen();
 	builder.Services.AddHealthChecks();
-	var app = builder.Build();
+    builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    }));
+
+    var app = builder.Build();
 
 	app.UseRouting();
-	app.MapControllers();
+    app.UseHttpsRedirection();
+    app.UseCors("AllowAll");
+
+    app.MapControllers();
 	app.UseDeveloperExceptionPage();
 	app.UseSwagger();
 	app.MapHealthChecks("healthcheck");
@@ -29,7 +39,7 @@ try
 		c.SwaggerEndpoint("/swagger/v1/swagger.json", "SkySensorsAPI");
 	});
 
-	app.Run();
+    app.Run();
 }
 catch(Exception ex)
 {
