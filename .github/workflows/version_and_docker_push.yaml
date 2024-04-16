@@ -64,6 +64,15 @@ jobs:
                 git push origin $TAG_VERSION
 
             #### ONLY RUN IF Triggered on new Tag ####
+            # Change connection string 
+            - name: edit connection string
+              if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+              uses: benday-inc/edit-dbconnstr-in-appsettings@main
+              with:
+                pathtosettingsfile: ./src/SkySensorsAPI/appsettings.json
+                name: "Postgres"
+                connectionstring: ${{ secrets.CONNECTING_STRING }}
+
             # Initialize and configure Docker Buildx, a modern building toolkit.
             - name: Setup Docker buildx
               if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
