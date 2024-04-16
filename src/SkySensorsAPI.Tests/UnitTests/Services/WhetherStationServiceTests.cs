@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NSubstitute;
 using SkySensorsAPI.ApplicationServices;
+using SkySensorsAPI.Models;
 using SkySensorsAPI.Repositories;
 
 namespace SkySensorsAPI.Tests.UnitTests.Services;
@@ -14,13 +15,13 @@ internal class WheatherStationServiceTests
 		WheatherStationAppService sut)
 	{
 		// Arrange
-		wheatherStationRepository.GetWheaterStations().Returns(new object());
+		wheatherStationRepository.GetWheaterStation("").Returns(new WeatherStation());
 
 		// Act
 		bool result = await sut.GetDummyValue();
 
 		// Assert
 		result.Should().BeTrue();
-		wheatherStationRepository.Received().GetWheaterStations().Should().NotBeNull();
+		wheatherStationRepository.Received().GetWheaterStation("").Should().NotBeNull();
 	}
 }
