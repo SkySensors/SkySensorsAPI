@@ -1,8 +1,7 @@
 ﻿namespace SkySensorsAPI.Models
 {
-    public class SensorValue
+    public class SensorValueDTO
     {
-
         public long UnixTime { get; set; }
         public float Value { get; set; }
     }

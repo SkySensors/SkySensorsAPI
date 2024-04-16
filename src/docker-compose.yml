@@ -1,7 +1,7 @@
 services:
   sky-sensors-api:
     container_name: sky-sensors-api
-    image: sky-sensors-api:0.0.1
+    image: sky-sensors-api:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -25,7 +25,7 @@ services:
 
   sky-sensors-api.tests:
     container_name: sky-sensors-api.tests
-    image: sky-sensors-api.tests:0.0.1
+    image: sky-sensors-api.tests:latest
     build:
       context: .
       dockerfile: Dockerfile
