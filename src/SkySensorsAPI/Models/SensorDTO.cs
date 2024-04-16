@@ -2,11 +2,11 @@
 
 namespace SkySensorsAPI.Models
 {
-    public class Sensor
+    public class SensorDTO
     {
 		[JsonConverter(typeof(JsonStringEnumConverter))] // Convert the Enum to string 
 		public SensorType Type { get; set; }
-        public float CalibrationOffset { get; set; }
-        public List<SensorValue> SensorValues { get; set; }
+        //public float CalibrationOffset { get; set; }
+        public List<SensorValueDTO> SensorValues { get; set; }
     }
 }

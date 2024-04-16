@@ -9,15 +9,21 @@ namespace SkySensorsAPI.Controllers;
 public class WhetherStationController(
 	IWhetherStationAppService weatherStationService) : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> GetWeatherStation(string macAddress = "00-b0-d0-63-c2-26")
-    {
-        WeatherStation? weatherStation = await weatherStationService.GetWeatherStation(macAddress);
+	[HttpGet]
+	public async Task<IActionResult> GetWeatherStation(string macAddress = "00-b0-d0-63-c2-26")
+	{
+		WeatherStation? weatherStation = await weatherStationService.GetWeatherStation(macAddress);
 
 		return weatherStation == null ? NotFound() : Ok(weatherStation);
-    }
+	}
+	[HttpGet]
+	public async Task<IActionResult> GetWeatherStations()
+	{
+		List<WeatherStation> weatherStations = await weatherStationService.GetWeatherStations();
 
-    [HttpPost]
+		return weatherStations == null ? NotFound() : Ok(weatherStations);
+	}
+	[HttpPost]
     public async Task<IActionResult> AddSensorValues()
     {
         return await weatherStationService.GetDummyValue() ? Ok() : NotFound();

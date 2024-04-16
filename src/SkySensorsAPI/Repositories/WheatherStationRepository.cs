@@ -3,13 +3,16 @@ using Dapper;
 using SkySensorsAPI.Models;
 using NpgsqlTypes;
 using System.Net.NetworkInformation;
+using System.Net.Mail;
+using Z.Dapper.Plus;
 namespace SkySensorsAPI.Repositories;
 
 public interface IWheatherStationRepository
 {
 	Task<WeatherStationDB> GetWheaterStation(string macAddress);
+	Task<IEnumerable<WeatherStationDB>> GetWheaterStations();
 	Task<IEnumerable<SensorDB>> GetSensorsByMacAddress(string macAddress);
-	Task<IEnumerable<SensorValue>> GetSensorValuesBySensorId(int sensorId);
+	Task<IEnumerable<SensorValueDTO>> GetSensorValuesBySensorId(int sensorId);
 
 
 }
@@ -23,6 +26,13 @@ public class WheatherStationRepository(
 			(con) => con.QueryFirstAsync<WeatherStationDB>("SELECT mac_address, lon, lat FROM weather_stations WHERE mac_address = @MacAddr;",
 			new { MacAddr = PhysicalAddress.Parse(macAddress), NpgsqlDbType = NpgsqlDbType.MacAddr }));
 	}
+
+	public async Task<IEnumerable<WeatherStationDB>> GetWheaterStations()
+	{
+		return await postgreSqlService.ExecuteQueryAsync(
+			(con) => con.QueryAsync<WeatherStationDB>("SELECT mac_address, lon, lat FROM weather_stations;"));
+	}
+
 	public async Task<IEnumerable<SensorDB>> GetSensorsByMacAddress(string macAddress)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
@@ -30,10 +40,10 @@ public class WheatherStationRepository(
 				new {WeatherID = PhysicalAddress.Parse(macAddress), NpgsqlDbType = NpgsqlDbType.MacAddr }));
 	}
 
-	public async Task<IEnumerable<SensorValue>> GetSensorValuesBySensorId(int sensorId)
+	public async Task<IEnumerable<SensorValueDTO>> GetSensorValuesBySensorId(int sensorId)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
-			(con) => con.QueryAsync<SensorValue>("SELECT unix_time, value FROM sensor_values WHERE sensor_id = @SensorId;",
+			(con) => con.QueryAsync<SensorValueDTO>("SELECT unix_time, value FROM sensor_values WHERE sensor_id = @SensorId;",
 				new {SensorId = sensorId}));
 	}
 }
