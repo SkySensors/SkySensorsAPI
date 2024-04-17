@@ -3,7 +3,7 @@ using Dapper;
 using SkySensorsAPI.Models;
 using NpgsqlTypes;
 using System.Net.NetworkInformation;
-using Z.Dapper.Plus;
+using Faithlife.Utility.Dapper;
 namespace SkySensorsAPI.Repositories;
 
 public interface IWheatherStationRepository
@@ -86,15 +86,8 @@ public class WheatherStationRepository(
 
 	public async Task InsertSensorValues(SensorValue[] sensorValues)
 	{
-		// Map to right table name an columns and add the unique keys to prevent duplicates
-		DapperPlusManager.Entity<SensorValue>()
-		.Table("sensor_values")
-		.Key(am => am.MacAddress, "mac_address")
-		.Key(am => am.Type, "type")
-		.Key(am => am.UnixTime, "unix_time")
-		.Map(am => am.Value, "value");
-
-		await postgreSqlService.ExecuteQueryAsync((con) => con.BulkInsertAsync(sensorValues));
+		await postgreSqlService.ExecuteQueryAsync((con) =>
+			con.BulkInsertAsync("INSERT INTO sensor_values(mac_address, type, unix_time, value) VALUES(@MacAddress, @Type, @UnixTime, @Value) ...", sensorValues));
 	}
 
 	public async Task<TimeSlot?> GetMacAddressTimeSlot(PhysicalAddress macAddress)
