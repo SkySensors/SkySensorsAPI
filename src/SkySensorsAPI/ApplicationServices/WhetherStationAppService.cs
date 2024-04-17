@@ -40,17 +40,17 @@ public class WheatherStationAppService(
     }
     public async Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime)
     {
-        IEnumerable<WeatherStation> wsds = await wheatherStationRepository.GetWheaterStations();
+        IEnumerable<WeatherStation> weatherStations = await wheatherStationRepository.GetWheaterStations();
 
-        List<WeatherStationDTO> weatherStations = [];
-        foreach (WeatherStation wsd in wsds)
+        List<WeatherStationDTO> weatherStationsDTO = [];
+        foreach (WeatherStation weatherStation in weatherStations)
         {
-            IEnumerable<Sensor> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(wsd.MacAddress.ToString());
+            IEnumerable<Sensor> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(weatherStation.MacAddress.ToString());
             List<SensorDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas, startTime, endTime);
-            weatherStations.Add(WeatherStation.ToWeatherStationDTO(wsd, sensors));
+            weatherStationsDTO.Add(WeatherStation.ToWeatherStationDTO(weatherStation, sensors));
         }
 
-        return weatherStations;
+        return weatherStationsDTO;
     }
 
     public async Task<bool> AddWeatherStation(WeatherStationDTO weatherStation)

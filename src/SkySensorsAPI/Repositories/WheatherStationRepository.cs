@@ -3,7 +3,6 @@ using Dapper;
 using SkySensorsAPI.Models;
 using NpgsqlTypes;
 using System.Net.NetworkInformation;
-using System.Net.Mail;
 namespace SkySensorsAPI.Repositories;
 
 public interface IWheatherStationRepository
