@@ -15,6 +15,9 @@ public interface IWheatherStationRepository
 	Task UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat);
 	Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
 	Task InsertSensorValues(SensorValue[] sensorValues);
+	Task<TimeSlot?> GetMacAddressTimeSlot(PhysicalAddress macAddress);
+	Task<int> GetBestTimeSlot();
+	Task InsertTimeSlot(PhysicalAddress macAddress, int secondsNumber);
 }
 
 public class WheatherStationRepository(
@@ -92,5 +95,31 @@ public class WheatherStationRepository(
 		.Map(am => am.Value, "value");
 
 		await postgreSqlService.ExecuteQueryAsync((con) => con.BulkInsertAsync(sensorValues));
+	}
+
+	public async Task<TimeSlot?> GetMacAddressTimeSlot(PhysicalAddress macAddress)
+	{
+		return await postgreSqlService.ExecuteQueryAsync(
+			   (con) => con.QueryFirstOrDefaultAsync<TimeSlot>("select mac_address, seconds_number from time_slots ts where mac_address = @MacAddress;",
+			   new
+			   {
+				   MacAddress = macAddress
+			   }));
+	}
+	public async Task<int> GetBestTimeSlot()
+	{
+		return await postgreSqlService.ExecuteQueryAsync(
+			   (con) => con.QueryFirstAsync<int>("SELECT get_possible_time_slot();"));
+	}
+	public async Task InsertTimeSlot(PhysicalAddress macAddress, int secondsNumber)
+	{
+		await postgreSqlService.ExecuteQueryAsync(
+			   (con) => con.ExecuteAsync("INSERT INTO public.time_slots (mac_address, seconds_number) VALUES(@MacAddress, @SecondsNumber);",
+			   new
+			   {
+				   MacAddress = macAddress,
+				   SecondsNumber = secondsNumber
+			   }
+			   ));
 	}
 }
