@@ -13,6 +13,7 @@ public interface IWheatherStationAppService
     public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime);
 
     public Task<IEnumerable<BasicWeatherStationDTO>> GetWeatherStationLists();
+
 }
 
 public class WheatherStationAppService(
