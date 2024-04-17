@@ -3,6 +3,7 @@ using Dapper;
 using SkySensorsAPI.Models;
 using NpgsqlTypes;
 using System.Net.NetworkInformation;
+using Z.Dapper.Plus;
 namespace SkySensorsAPI.Repositories;
 
 public interface IWheatherStationRepository
@@ -13,6 +14,7 @@ public interface IWheatherStationRepository
 	Task<IEnumerable<SensorValueDTO>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
 	Task UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat);
 	Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
+	Task InsertSensorValues(SensorValue[] sensorValues);
 }
 
 public class WheatherStationRepository(
@@ -77,5 +79,18 @@ public class WheatherStationRepository(
 				   MacAddress = macAddress,
 				   Type = type
 			   }));
+	}
+
+	public async Task InsertSensorValues(SensorValue[] sensorValues)
+	{
+		// Map to right table name an columns and add the unique keys to prevent duplicates
+		DapperPlusManager.Entity<SensorValue>()
+		.Table("sensor_values")
+		.Key(am => am.MacAddress, "mac_address")
+		.Key(am => am.Type, "type")
+		.Key(am => am.UnixTime, "unix_time")
+		.Map(am => am.Value, "value");
+
+		await postgreSqlService.ExecuteQueryAsync((con) => con.BulkInsertAsync(sensorValues));
 	}
 }
