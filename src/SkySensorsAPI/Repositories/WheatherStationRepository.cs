@@ -66,7 +66,7 @@ public class WheatherStationRepository(
 				   Latitude = lat
 			   }));
 
-		return succeeded == 0 ? false : true;
+		return succeeded != 0;
 	}
 
 	public async Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
