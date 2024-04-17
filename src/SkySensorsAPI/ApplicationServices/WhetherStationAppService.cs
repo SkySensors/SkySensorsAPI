@@ -14,6 +14,7 @@ public interface IWheatherStationAppService
 	public Task<IEnumerable<BasicWeatherStationDTO>> GetWeatherStationLists();
 	public Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic);
 	public Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
+	public Task InsertMeasuredSensorValues(MeasuredSensorValuesDTO[] measureds);
 }
 
 public class WheatherStationAppService(
@@ -94,11 +95,23 @@ public class WheatherStationAppService(
 
 	public async Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic)
 	{
-		await wheatherStationRepository.UpsertWeatherStation(weatherStationBasic.MacAddress, weatherStationBasic.GpsLocation.Longitude,  weatherStationBasic.GpsLocation.Latitude);
+		await wheatherStationRepository.UpsertWeatherStation(weatherStationBasic.MacAddress, weatherStationBasic.GpsLocation.Longitude, weatherStationBasic.GpsLocation.Latitude);
 	}
 
 	public async Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
 	{
 		await wheatherStationRepository.UpsertWeatherStationSensor(macAddress, type);
+	}
+
+	public async Task InsertMeasuredSensorValues(MeasuredSensorValuesDTO[] measureds)
+	{
+		SensorValue[] sensorValues = measureds.SelectMany(m => m.SensorValues.Select(v => new SensorValue()
+		{
+			MacAddress = m.MacAddress,
+			Type = m.Type.ToString(),
+			UnixTime = v.UnixTime,
+			Value = v.Value
+		})).ToArray();
+		await wheatherStationRepository.InsertSensorValues(sensorValues);
 	}
 }
