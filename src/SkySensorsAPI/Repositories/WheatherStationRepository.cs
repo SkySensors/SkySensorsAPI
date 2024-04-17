@@ -79,6 +79,6 @@ public class WheatherStationRepository(
 				   Type = type
 			   }));
 
-		return succeeded == 0 ? false : true;
+		return succeeded != 0;
 	}
 }
