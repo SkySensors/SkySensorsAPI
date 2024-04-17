@@ -46,11 +46,9 @@ public class WheatherStationController(
 		}
 
 		// Find the time schedule that would fit for this device
-		return new TimeSlotDto()
-		{
-			IntervalSeconds = 60,
-			SecondNumber = 10,
-		};
+		TimeSlotDto timeSlotDTO = await weatherStationService.UpsertTimeSlot(weatherStation.MacAddress);
+
+		return timeSlotDTO;
 	}
 
 	[HttpGet("list")]

@@ -14,6 +14,7 @@ public interface IWheatherStationAppService
 	public Task<IEnumerable<BasicWeatherStationDTO>> GetWeatherStationLists();
 	public Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic);
 	public Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
+	public Task<TimeSlotDto> UpsertTimeSlot(PhysicalAddress macAddress);
 }
 
 public class WheatherStationAppService(
@@ -100,5 +101,25 @@ public class WheatherStationAppService(
 	public async Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
 	{
 		await wheatherStationRepository.UpsertWeatherStationSensor(macAddress, type);
+	}
+
+	public async Task<TimeSlotDto> UpsertTimeSlot(PhysicalAddress macAddress)
+	{
+		// Find the time schedule that would fit for this device
+		// Check if schedule already exists for this device
+		TimeSlot timeSlot = await wheatherStationRepository.GetMacAddressTimeSlot(macAddress);
+
+		// IF timeslot already exists, then return it
+		if (timeSlot != null)
+		{
+			return timeSlot.ToTimeSlotDTO();
+		}
+
+		// If not, then find the least used timeslot
+		int secondsNumber = await wheatherStationRepository.GetBestTimeSlot();
+
+		await wheatherStationRepository.InsertTimeSlot(macAddress, secondsNumber);
+
+		return new TimeSlotDto { SecondsNumber = secondsNumber };
 	}
 }
