@@ -109,7 +109,7 @@ public class WheatherStationAppService(
 		{
 			MacAddress = m.MacAddress,
 			Type = m.Type.ToString(),
-			UnixTime = v.UnixTime,
+			UnixTime = v.UnixTime * 1000,
 			Value = v.Value
 		})).ToArray();
 		await wheatherStationRepository.InsertSensorValues(sensorValues);
