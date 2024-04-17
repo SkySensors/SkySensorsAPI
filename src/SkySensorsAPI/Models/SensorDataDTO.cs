@@ -1,7 +1,7 @@
 ﻿namespace SkySensorsAPI.Models
 {
-    public class SensorDataDTO
-    {
-        public SensorType Type { get; set; }
-    }
+	public class SensorDataDTO
+	{
+		public SensorType Type { get; set; }
+	}
 }
