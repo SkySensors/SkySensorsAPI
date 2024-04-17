@@ -10,7 +10,7 @@ public interface IWheatherStationRepository
 	Task<WeatherStation> GetWheaterStation(string macAddress);
 	Task<IEnumerable<WeatherStation>> GetWheaterStations();
 	Task<IEnumerable<Sensor>> GetSensorsByMacAddress(string macAddress);
-	Task<IEnumerable<SensorValueDTO>> GetSensorValuesBySensorId(int sensorId);
+	Task<IEnumerable<SensorValueDTO>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
 }
 
 public class WheatherStationRepository(
@@ -32,14 +32,24 @@ public class WheatherStationRepository(
 	public async Task<IEnumerable<Sensor>> GetSensorsByMacAddress(string macAddress)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
-			(con) => con.QueryAsync<Sensor>("SELECT id, type, calibration_offset FROM sensors WHERE weather_id = @WeatherID;", 
-				new {WeatherID = PhysicalAddress.Parse(macAddress), NpgsqlDbType = NpgsqlDbType.MacAddr }));
+			(con) => con.QueryAsync<Sensor>("SELECT mac_address, type FROM sensors WHERE mac_address = @MacAddress;",
+				new
+				{
+					MacAddress = PhysicalAddress.Parse(macAddress),
+					NpgsqlDbType = NpgsqlDbType.MacAddr
+				}));
 	}
 
-	public async Task<IEnumerable<SensorValueDTO>> GetSensorValuesBySensorId(int sensorId)
+	public async Task<IEnumerable<SensorValueDTO>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
-			(con) => con.QueryAsync<SensorValueDTO>("SELECT unix_time, value FROM sensor_values WHERE sensor_id = @SensorId;",
-				new {SensorId = sensorId}));
+			(con) => con.QueryAsync<SensorValueDTO>("SELECT unix_time, value FROM sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime;",
+			new
+			{
+				MacAddress = macAddress,
+				Type = type,
+				StartTime = startTime,
+				EndTime = endTime
+			}));
 	}
 }

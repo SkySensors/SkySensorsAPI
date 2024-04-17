@@ -3,7 +3,7 @@
 namespace SkySensorsAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class TimeController : ControllerBase
 {
     [HttpGet]

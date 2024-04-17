@@ -7,77 +7,81 @@ namespace SkySensorsAPI.ApplicationServices;
 
 public interface IWheatherStationAppService
 {
-    public Task<bool> GetDummyValue();
-    public Task<WeatherStationDTO> GetWeatherStation(string macAddress);
+	public Task<bool> GetDummyValue();
+	public Task<WeatherStationDTO> GetWeatherStation(string macAddress, long startTime, long endTime);
 
-	public Task<List<WeatherStationDTO>> GetWeatherStations();
+	public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime);
 
 	public Task<IEnumerable<BasicWeatherStationDTO>> GetWeatherStationLists();
+
 }
 
 public class WheatherStationAppService(
-    IWheatherStationRepository wheatherStationRepository,
-    ILogger<WheatherStationAppService> logger) : IWheatherStationAppService
+	IWheatherStationRepository wheatherStationRepository,
+	ILogger<WheatherStationAppService> logger) : IWheatherStationAppService
 {
-    public async Task<bool> GetDummyValue()
-    {
-        logger.LogInformation("GetDummyValue was called");
+	public async Task<bool> GetDummyValue()
+	{
+		logger.LogInformation("GetDummyValue was called");
 
-        object wheaterStation = await wheatherStationRepository.GetWheaterStation("");
-        return wheaterStation != null;
-    }
+		object wheaterStation = await wheatherStationRepository.GetWheaterStation("");
+		return wheaterStation != null;
+	}
 
-    public async Task<WeatherStationDTO> GetWeatherStation(string macAddress)
-    {
-        WeatherStation wsd = await wheatherStationRepository.GetWheaterStation(macAddress);
+	public async Task<WeatherStationDTO> GetWeatherStation(string macAddress, long startTime, long endTime)
+	{
+		WeatherStation wsd = await wheatherStationRepository.GetWheaterStation(macAddress);
 		IEnumerable<Sensor> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(macAddress);
 
-        List<SensorDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas);
+		List<SensorDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas, startTime, endTime);
 
 
-        return WeatherStation.ToWeatherStationDTO(wsd, sensors);
-    }
-	public async Task<List<WeatherStationDTO>> GetWeatherStations()
+		return WeatherStation.ToWeatherStationDTO(wsd, sensors);
+	}
+	public async Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime)
 	{
-		IEnumerable<WeatherStation> wsds = await wheatherStationRepository.GetWheaterStations();
+		IEnumerable<WeatherStation> weatherStations = await wheatherStationRepository.GetWheaterStations();
 
-		List<WeatherStationDTO> weatherStations = [];
-		foreach (WeatherStation wsd in wsds)
+		List<WeatherStationDTO> weatherStationsDTO = [];
+		foreach (WeatherStation weatherStation in weatherStations)
 		{
-			IEnumerable<Sensor> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(wsd.MacAddress.ToString());
-			List<SensorDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas);
-			weatherStations.Add(WeatherStation.ToWeatherStationDTO(wsd,sensors));
+			IEnumerable<Sensor> sensorDatas = await wheatherStationRepository.GetSensorsByMacAddress(weatherStation.MacAddress.ToString());
+			List<SensorDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas, startTime, endTime);
+			weatherStationsDTO.Add(WeatherStation.ToWeatherStationDTO(weatherStation, sensors));
 		}
 
-		return weatherStations;
+		return weatherStationsDTO;
 	}
 
 	public async Task<bool> AddWeatherStation(WeatherStationDTO weatherStation)
-    {
-        return false;
-    }
+	{
+		return false;
+	}
 
-    public async Task<bool> AddSensorValues(List<SensorDTO> sensors)
-    {
-        return false;
-    }
+	public async Task<bool> AddSensorValues(List<SensorDTO> sensors)
+	{
+		return false;
+	}
 
-	private async Task<List<SensorDTO>> MapSensorsAndSensorValuesToDTO(IEnumerable<Sensor> sensorDBs)
+	private async Task<List<SensorDTO>> MapSensorsAndSensorValuesToDTO(IEnumerable<Sensor> sensorDBs, long startTime, long endTime)
 	{
 		List<SensorDTO> sensors = [];
 
-		// Fetch all sensor values foreach sensor 
-		foreach (Sensor sensorData in sensorDBs)
+		if (sensorDBs != null)
 		{
-			IEnumerable<SensorValueDTO> values = await wheatherStationRepository.GetSensorValuesBySensorId(sensorData.Id);
-
-			sensors.Add(new SensorDTO()
+			// Fetch all sensor values foreach sensor 
+			foreach (Sensor sensorData in sensorDBs)
 			{
-				//CalibrationOffset = sensorData.CalibrationOffset,
-				Type = sensorData.Type,
-				SensorValues = values.ToList(),
+				IEnumerable<SensorValueDTO> values = await wheatherStationRepository.GetSensorValuesByMacAddress(sensorData.MacAddress, sensorData.Type.ToString(), startTime, endTime);
 
-			});
+				sensors.Add(new SensorDTO()
+				{
+					//CalibrationOffset = sensorData.CalibrationOffset,
+					Type = sensorData.Type,
+					SensorValues = values.ToList(),
+
+				});
+			}
 		}
 		return sensors;
 	}
