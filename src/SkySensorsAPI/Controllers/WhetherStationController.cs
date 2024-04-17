@@ -36,11 +36,28 @@ public class WheatherStationController(
 	[HttpPost("handshake")]
 	public async Task<IActionResult> MakeWeatherStationHandshake(WeatherStationBasicDTO weatherStation)
 	{
-		// Check if weather station exists, if not then create it
+		// Insert or update weather station
+		bool weatherStationOK = await weatherStationService.UpsertWeatherStation(weatherStation);
 
-		// Check if sensors exists, if not then add them
+		if (!weatherStationOK)
+		{
+			return StatusCode(500);
+		}
 
-		return await weatherStationService.GetDummyValue() ? Ok() : NotFound();
+		// Add all sensors that does not exist
+		foreach (var sensor in weatherStation.Sensors)
+		{
+			bool sensorOK = await weatherStationService.UpsertWeatherStationSensor(weatherStation.MacAddress, sensor.Type.ToString());
+
+			if (!sensorOK)
+			{
+				return StatusCode(500);
+			}
+		}
+
+		// Find the time schedule that would fit for this device
+
+		return Ok();
 	}
 
 	[HttpGet("list")]
