@@ -101,7 +101,6 @@ public class WheatherStationAppService(
 
 	public async Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
 	{
-		bool j = await wheatherStationRepository.UpsertWeatherStationSensor(macAddress, type);
-		return j;
+		return await wheatherStationRepository.UpsertWeatherStationSensor(macAddress, type);
 	}
 }
