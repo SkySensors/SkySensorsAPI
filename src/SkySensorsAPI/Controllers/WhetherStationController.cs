@@ -28,9 +28,11 @@ public class WheatherStationController(
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> AddSensorValues(MeasuredSensorValuesDTO measuredSensorValuesDTO)
+	public async Task<IActionResult> AddSensorValues(MeasuredSensorValuesDTO[] measuredSensorValuesDTOs)
 	{
-		return await weatherStationService.GetDummyValue() ? Ok() : NotFound();
+		await weatherStationService.InsertMeasuredSensorValues(measuredSensorValuesDTOs);
+
+		return Ok();
 	}
 
 	[HttpPost("handshake")]
