@@ -96,8 +96,7 @@ public class WheatherStationAppService(
 
 	public async Task<bool> UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic)
 	{
-		bool j = await wheatherStationRepository.UpsertWeatherStation(weatherStationBasic.MacAddress, weatherStationBasic.GpsLocation.Longitude,  weatherStationBasic.GpsLocation.Latitude);
-		return j;
+		return await wheatherStationRepository.UpsertWeatherStation(weatherStationBasic.MacAddress, weatherStationBasic.GpsLocation.Longitude,  weatherStationBasic.GpsLocation.Latitude);
 	}
 
 	public async Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
