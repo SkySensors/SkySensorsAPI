@@ -2,6 +2,7 @@
 using SkySensorsAPI.Repositories;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 
 namespace SkySensorsAPI.ApplicationServices;
 
@@ -13,7 +14,8 @@ public interface IWheatherStationAppService
 	public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime);
 
 	public Task<IEnumerable<BasicWeatherStationDTO>> GetWeatherStationLists();
-
+	public Task<bool> UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic);
+	public Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
 }
 
 public class WheatherStationAppService(
@@ -90,5 +92,17 @@ public class WheatherStationAppService(
 	{
 		IEnumerable<WeatherStation> wsds = await wheatherStationRepository.GetWheaterStations();
 		return wsds.Select(w => WeatherStation.ToBasicWeatherStationDTO(w));
+	}
+
+	public async Task<bool> UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic)
+	{
+		bool j = await wheatherStationRepository.UpsertWeatherStation(weatherStationBasic.MacAddress, weatherStationBasic.GpsLocation.Longitude,  weatherStationBasic.GpsLocation.Latitude);
+		return j;
+	}
+
+	public async Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
+	{
+		bool j = await wheatherStationRepository.UpsertWeatherStationSensor(macAddress, type);
+		return j;
 	}
 }

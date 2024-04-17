@@ -11,6 +11,8 @@ public interface IWheatherStationRepository
 	Task<IEnumerable<WeatherStation>> GetWheaterStations();
 	Task<IEnumerable<Sensor>> GetSensorsByMacAddress(string macAddress);
 	Task<IEnumerable<SensorValueDTO>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
+	Task<bool> UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat);
+	Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
 }
 
 public class WheatherStationRepository(
@@ -43,7 +45,7 @@ public class WheatherStationRepository(
 	public async Task<IEnumerable<SensorValueDTO>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
-			(con) => con.QueryAsync<SensorValueDTO>("SELECT unix_time, value FROM sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime;",
+			(con) => con.QueryAsync<SensorValueDTO>("SELECT unix_time, value FROM calibrated_sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime;",
 			new
 			{
 				MacAddress = macAddress,
@@ -51,5 +53,32 @@ public class WheatherStationRepository(
 				StartTime = startTime,
 				EndTime = endTime
 			}));
+	}
+
+	public async Task<bool> UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat)
+	{
+		int succeeded = await postgreSqlService.ExecuteQueryAsync(
+			   (con) => con.ExecuteAsync("INSERT INTO public.weather_stations (mac_address, lon, lat) VALUES(@MacAddress, @Longitude, @Latitude) ON CONFLICT (mac_address) DO UPDATE SET lon=EXCLUDED.lon, lat=EXCLUDED.lat;",
+			   new
+			   {
+				   MacAddress = macAddress,
+				   Longitude = lon,
+				   Latitude = lat
+			   }));
+
+		return succeeded == 0 ? false : true;
+	}
+
+	public async Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
+	{
+		int succeeded = await postgreSqlService.ExecuteQueryAsync(
+			   (con) => con.ExecuteAsync("INSERT INTO public.sensors (mac_address, \"type\") VALUES(@MacAddress, @Type) ON CONFLICT (mac_address, \"type\") DO NOTHING;",
+			   new
+			   {
+				   MacAddress = macAddress,
+				   Type = type
+			   }));
+
+		return succeeded == 0 ? false : true;
 	}
 }
