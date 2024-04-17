@@ -28,36 +28,29 @@ public class WheatherStationController(
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> AddSensorValues()
+	public async Task<IActionResult> AddSensorValues(MeasuredSensorValuesDTO measuredSensorValuesDTO)
 	{
 		return await weatherStationService.GetDummyValue() ? Ok() : NotFound();
 	}
 
 	[HttpPost("handshake")]
-	public async Task<IActionResult> MakeWeatherStationHandshake(WeatherStationBasicDTO weatherStation)
+	public async Task<ActionResult<TimeSlotDto>> MakeWeatherStationHandshake(WeatherStationBasicDTO weatherStation)
 	{
 		// Insert or update weather station
-		bool weatherStationOK = await weatherStationService.UpsertWeatherStation(weatherStation);
-
-		if (!weatherStationOK)
-		{
-			return StatusCode(500);
-		}
+		await weatherStationService.UpsertWeatherStation(weatherStation);
 
 		// Add all sensors that does not exist
 		foreach (var sensor in weatherStation.Sensors)
 		{
-			bool sensorOK = await weatherStationService.UpsertWeatherStationSensor(weatherStation.MacAddress, sensor.Type.ToString());
-
-			if (!sensorOK)
-			{
-				return StatusCode(500);
-			}
+			await weatherStationService.UpsertWeatherStationSensor(weatherStation.MacAddress, sensor.Type.ToString());
 		}
 
 		// Find the time schedule that would fit for this device
-
-		return Ok();
+		return new TimeSlotDto()
+		{
+			IntervalSeconds = 60,
+			SecondNumber = 10,
+		};
 	}
 
 	[HttpGet("list")]

@@ -1,7 +1,5 @@
 ﻿using SkySensorsAPI.Models;
 using SkySensorsAPI.Repositories;
-using System.Collections;
-using System.Collections.Generic;
 using System.Net.NetworkInformation;
 
 namespace SkySensorsAPI.ApplicationServices;
@@ -14,8 +12,8 @@ public interface IWheatherStationAppService
 	public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime);
 
 	public Task<IEnumerable<BasicWeatherStationDTO>> GetWeatherStationLists();
-	public Task<bool> UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic);
-	public Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
+	public Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic);
+	public Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
 }
 
 public class WheatherStationAppService(
@@ -94,13 +92,13 @@ public class WheatherStationAppService(
 		return wsds.Select(w => WeatherStation.ToBasicWeatherStationDTO(w));
 	}
 
-	public async Task<bool> UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic)
+	public async Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic)
 	{
-		return await wheatherStationRepository.UpsertWeatherStation(weatherStationBasic.MacAddress, weatherStationBasic.GpsLocation.Longitude,  weatherStationBasic.GpsLocation.Latitude);
+		await wheatherStationRepository.UpsertWeatherStation(weatherStationBasic.MacAddress, weatherStationBasic.GpsLocation.Longitude,  weatherStationBasic.GpsLocation.Latitude);
 	}
 
-	public async Task<bool> UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
+	public async Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
 	{
-		return await wheatherStationRepository.UpsertWeatherStationSensor(macAddress, type);
+		await wheatherStationRepository.UpsertWeatherStationSensor(macAddress, type);
 	}
 }
