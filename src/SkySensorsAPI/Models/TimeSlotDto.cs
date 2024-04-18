@@ -2,6 +2,6 @@
 
 public class TimeSlotDto
 {
-	public required int SecondNumber { get; set; }
-	public required int IntervalSeconds { get; set; }
+	public required int SecondsNumber { get; set; }
+	public int IntervalSeconds { get; } = 10; // Controls how often data should be sent
 }

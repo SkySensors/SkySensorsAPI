@@ -3,7 +3,7 @@ using Dapper;
 using SkySensorsAPI.Models;
 using NpgsqlTypes;
 using System.Net.NetworkInformation;
-using Z.Dapper.Plus;
+using Faithlife.Utility.Dapper;
 namespace SkySensorsAPI.Repositories;
 
 public interface IWheatherStationRepository
@@ -15,6 +15,9 @@ public interface IWheatherStationRepository
 	Task UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat);
 	Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
 	Task InsertSensorValues(SensorValue[] sensorValues);
+	Task<TimeSlot?> GetMacAddressTimeSlot(PhysicalAddress macAddress);
+	Task<int> GetBestTimeSlot();
+	Task InsertTimeSlot(PhysicalAddress macAddress, int secondsNumber);
 }
 
 public class WheatherStationRepository(
@@ -83,14 +86,33 @@ public class WheatherStationRepository(
 
 	public async Task InsertSensorValues(SensorValue[] sensorValues)
 	{
-		// Map to right table name an columns and add the unique keys to prevent duplicates
-		DapperPlusManager.Entity<SensorValue>()
-		.Table("sensor_values")
-		.Key(am => am.MacAddress, "mac_address")
-		.Key(am => am.Type, "type")
-		.Key(am => am.UnixTime, "unix_time")
-		.Map(am => am.Value, "value");
+		await postgreSqlService.ExecuteQueryAsync((con) =>
+			con.BulkInsertAsync("INSERT INTO sensor_values(mac_address, type, unix_time, value) VALUES(@MacAddress, @Type, @UnixTime, @Value) ...", sensorValues));
+	}
 
-		await postgreSqlService.ExecuteQueryAsync((con) => con.BulkInsertAsync(sensorValues));
+	public async Task<TimeSlot?> GetMacAddressTimeSlot(PhysicalAddress macAddress)
+	{
+		return await postgreSqlService.ExecuteQueryAsync(
+			   (con) => con.QueryFirstOrDefaultAsync<TimeSlot>("select mac_address, seconds_number from time_slots ts where mac_address = @MacAddress;",
+			   new
+			   {
+				   MacAddress = macAddress
+			   }));
+	}
+	public async Task<int> GetBestTimeSlot()
+	{
+		return await postgreSqlService.ExecuteQueryAsync(
+			   (con) => con.QueryFirstAsync<int>("SELECT get_possible_time_slot();"));
+	}
+	public async Task InsertTimeSlot(PhysicalAddress macAddress, int secondsNumber)
+	{
+		await postgreSqlService.ExecuteQueryAsync(
+			   (con) => con.ExecuteAsync("INSERT INTO public.time_slots (mac_address, seconds_number) VALUES(@MacAddress, @SecondsNumber);",
+			   new
+			   {
+				   MacAddress = macAddress,
+				   SecondsNumber = secondsNumber
+			   }
+			   ));
 	}
 }
