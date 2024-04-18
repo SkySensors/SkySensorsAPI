@@ -31,7 +31,7 @@ public class WheatherStationController(
 	}
 
 	[HttpPost("handshake")]
-	public async Task<ActionResult<TimeSlotDto>> MakeWeatherStationHandshake(WeatherStationBasicDTO weatherStation)
+	public async Task<ActionResult<TimeSlotDTO>> MakeWeatherStationHandshake(WeatherStationBasicDTO weatherStation)
 	{
 		// Insert or update weather station
 		await weatherStationService.UpsertWeatherStation(weatherStation);
@@ -43,7 +43,7 @@ public class WheatherStationController(
 		}
 
 		// Find the time schedule that would fit for this device
-		TimeSlotDto timeSlotDTO = await timeSlotAppService.UpsertTimeSlot(weatherStation.MacAddress);
+		TimeSlotDTO timeSlotDTO = await timeSlotAppService.UpsertTimeSlot(weatherStation.MacAddress);
 
 		return timeSlotDTO;
 	}
