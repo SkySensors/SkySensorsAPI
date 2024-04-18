@@ -17,7 +17,7 @@ jobs:
       - name: edit connection string
         uses: benday-inc/edit-dbconnstr-in-appsettings@main
         with:
-          pathtosettingsfile: ./src/SkySensorsAPI.Tests/appsettings.tests.json
+          pathtosettingsfile: ./src/SkySensorsAPI/appsettings.json
           name: "Postgres"
           connectionstring: ${{ secrets.CONNECTING_STRING }}
       - name: Build and test
