@@ -11,12 +11,12 @@ public class WeatherStationLocationAndMacDTO
     public required PhysicalAddress MacAddress { get; set; }
     public required GpsLocation GpsLocation { get; set; }
 
-	public static WeatherStationLocationAndMacDTO FromWeatherStation(WeatherStation weatherStationDB)
+	public static WeatherStationLocationAndMacDTO FromWeatherStation(WeatherStation weatherStation)
 	{
 		return new WeatherStationLocationAndMacDTO
 		{
-			MacAddress = weatherStationDB.MacAddress,
-			GpsLocation = new GpsLocation() { Latitude = weatherStationDB.Lat, Longitude = weatherStationDB.Lon },
+			MacAddress = weatherStation.MacAddress,
+			GpsLocation = new GpsLocation() { Latitude = weatherStation.Lat, Longitude = weatherStation.Lon },
 		};
 	}
 }

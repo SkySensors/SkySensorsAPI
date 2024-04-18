@@ -12,13 +12,13 @@ public class WeatherStationDTO
 	public required GpsLocation GpsLocation { get; set; }
 	public List<MeasuredSensorValuesDTO> Sensors { get; set; } = [];
 
-	public static WeatherStationDTO FromWeatherStation(WeatherStation weatherStationDB, List<MeasuredSensorValuesDTO> sensors)
+	public static WeatherStationDTO FromWeatherStation(WeatherStation weatherStation, List<MeasuredSensorValuesDTO> measuredSensorValuesDTO)
 	{
 		return new WeatherStationDTO()
 		{
-			MacAddress = weatherStationDB.MacAddress,
-			GpsLocation = new GpsLocation() { Latitude = weatherStationDB.Lat, Longitude = weatherStationDB.Lon },
-			Sensors = sensors,
+			MacAddress = weatherStation.MacAddress,
+			GpsLocation = new GpsLocation() { Latitude = weatherStation.Lat, Longitude = weatherStation.Lon },
+			Sensors = measuredSensorValuesDTO,
 		};
 	}
 }
