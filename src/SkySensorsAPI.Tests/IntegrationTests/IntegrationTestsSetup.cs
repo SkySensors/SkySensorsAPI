@@ -11,25 +11,25 @@ internal class IntegrationTestsSetup
 	[OneTimeSetUp]
 	public static async Task Setup()
 	{
-		//Configuration = new ConfigurationBuilder()
-		//   .AddJsonFile("appsettings.tests.json")
-		//   .AddEnvironmentVariables()
-		//   .Build();
+		Configuration = new ConfigurationBuilder()
+		   .AddJsonFile("appsettings.tests.json")
+		   .AddEnvironmentVariables()
+		   .Build();
 
-		//string apiUrl = Configuration.GetValue<string>("ApiUrl") ?? string.Empty;
-		//HttpClient = new HttpClient
-		//{
-		//	BaseAddress = new Uri(apiUrl)
-		//};
+		string apiUrl = Configuration.GetValue<string>("ApiUrl") ?? string.Empty;
+		HttpClient = new HttpClient
+		{
+			BaseAddress = new Uri(apiUrl)
+		};
 
-		//try
-		//{
-		//	HttpResponseMessage healthCheckResult = await HttpClient.GetAsync("healthcheck");
-		//	healthCheckResult.EnsureSuccessStatusCode();
-		//}
-		//catch (Exception ex)
-		//{
-		//	throw new Exception("SkySensorsAPI was unreachable did you forget to start the API application?", ex);
-		//}
+		try
+		{
+			HttpResponseMessage healthCheckResult = await HttpClient.GetAsync("healthcheck");
+			healthCheckResult.EnsureSuccessStatusCode();
+		}
+		catch (Exception ex)
+		{
+			throw new Exception("SkySensorsAPI was unreachable did you forget to start the API application?", ex);
+		}
 	}
 }
