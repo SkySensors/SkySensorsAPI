@@ -2,7 +2,7 @@
 using System.Net.NetworkInformation;
 using System.Text.Json.Serialization;
 
-namespace SkySensorsAPI.Models.Dto;
+namespace SkySensorsAPI.Models.DTO;
 
 public class WeatherStationBasicDTO
 {

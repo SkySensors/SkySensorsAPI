@@ -1,4 +1,4 @@
-﻿namespace SkySensorsAPI.Models.Dto;
+﻿namespace SkySensorsAPI.Models.DTO;
 
 public class SensorValueDTO
 {

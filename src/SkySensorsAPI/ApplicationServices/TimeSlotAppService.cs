@@ -1,4 +1,4 @@
-﻿using SkySensorsAPI.Models.Dto;
+﻿using SkySensorsAPI.Models.DTO;
 using SkySensorsAPI.Models.Infrastructure;
 using SkySensorsAPI.Repositories;
 using System.Net.NetworkInformation;

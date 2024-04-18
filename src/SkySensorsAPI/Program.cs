@@ -11,7 +11,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
 	var builder = WebApplication.CreateBuilder(args);
-	builder.Services.AddSingleton<IWheatherStationAppService, WheatherStationAppService>();
+	builder.Services.AddSingleton<IWeatherStationAppService, WeatherStationAppService>();
 	builder.Services.AddSingleton<ITimeSlotAppService, TimeSlotAppService>();
 	builder.Services.AddSingleton<IPostgreSqlInfrastureService, PostgreSqlInfrastureService>();
 	builder.Services.AddSingleton<IWeatherStationRepository, WeatherStationRepository>();

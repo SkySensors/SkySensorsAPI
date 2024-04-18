@@ -1,11 +1,11 @@
-﻿using SkySensorsAPI.Models.Dto;
+﻿using SkySensorsAPI.Models.DTO;
 using SkySensorsAPI.Models.Infrastructure;
 using SkySensorsAPI.Repositories;
 using System.Net.NetworkInformation;
 
 namespace SkySensorsAPI.ApplicationServices;
 
-public interface IWheatherStationAppService
+public interface IWeatherStationAppService
 {
 	public Task<WeatherStationDTO> GetWeatherStation(string macAddress, long startTime, long endTime);
 	public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime);
@@ -15,8 +15,8 @@ public interface IWheatherStationAppService
 	public Task InsertMeasuredSensorValues(MeasuredSensorValuesDTO[] measuredSensorValues);
 }
 
-public class WheatherStationAppService(
-	IWeatherStationRepository weatherStationRepository) : IWheatherStationAppService
+public class WeatherStationAppService(
+	IWeatherStationRepository weatherStationRepository) : IWeatherStationAppService
 {
 	public async Task<WeatherStationDTO> GetWeatherStation(string macAddress, long startTime, long endTime)
 	{
