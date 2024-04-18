@@ -4,10 +4,9 @@ using NpgsqlTypes;
 using System.Net.NetworkInformation;
 using Faithlife.Utility.Dapper;
 using SkySensorsAPI.Models.Infrastructure;
-using SkySensorsAPI.Models.Dto;
 namespace SkySensorsAPI.Repositories;
 
-public interface IWheatherStationRepository
+public interface IWeatherStationRepository
 {
 	Task<WeatherStation> GetWheaterStation(string macAddress);
 	Task<IEnumerable<WeatherStation>> GetWheaterStations();
@@ -18,8 +17,8 @@ public interface IWheatherStationRepository
 	Task InsertSensorValues(SensorValue[] sensorValues);
 }
 
-public class WheatherStationRepository(
-	IPostgreSqlInfrastureService postgreSqlService) : IWheatherStationRepository
+public class WeatherStationRepository(
+	IPostgreSqlInfrastureService postgreSqlService) : IWeatherStationRepository
 {
 	public async Task<WeatherStation> GetWheaterStation(string macAddress)
 	{

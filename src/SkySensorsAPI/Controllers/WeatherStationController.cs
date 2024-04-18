@@ -6,7 +6,7 @@ namespace SkySensorsAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class WheatherStationController(
+public class WeatherStationController(
 	ITimeSlotAppService timeSlotAppService,
 	IWheatherStationAppService weatherStationService) : ControllerBase
 {
