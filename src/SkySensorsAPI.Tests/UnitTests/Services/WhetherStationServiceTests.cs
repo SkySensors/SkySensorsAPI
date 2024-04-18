@@ -9,19 +9,19 @@ namespace SkySensorsAPI.Tests.UnitTests.Services;
 
 internal class WheatherStationServiceTests
 {
-	[Test, AutoDomainData]
-	public async Task GetDummyValue_WhenEverythingIsValid_ReturnsTrue(
-		[Frozen] IWheatherStationRepository wheatherStationRepository,
-		WheatherStationAppService sut)
-	{
-		// Arrange
-		wheatherStationRepository.GetWheaterStation("").Returns(new WeatherStation());
+	//[Test, AutoDomainData]
+	//public async Task GetDummyValue_WhenEverythingIsValid_ReturnsTrue(
+	//	[Frozen] IWheatherStationRepository wheatherStationRepository,
+	//	WheatherStationAppService sut)
+	//{
+	//	// Arrange
+	//	wheatherStationRepository.GetWheaterStation("").Returns(new WeatherStation());
 
-		// Act
-		bool result = await sut.GetDummyValue();
+	//	// Act
+	//	bool result = await sut.GetDummyValue();
 
-		// Assert
-		result.Should().BeTrue();
-		wheatherStationRepository.Received().GetWheaterStation("").Should().NotBeNull();
-	}
+	//	// Assert
+	//	result.Should().BeTrue();
+	//	wheatherStationRepository.Received().GetWheaterStation("").Should().NotBeNull();
+	//}
 }

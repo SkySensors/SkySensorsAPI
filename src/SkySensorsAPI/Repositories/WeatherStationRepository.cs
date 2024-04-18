@@ -1,27 +1,24 @@
 ﻿using SkySensorsAPI.InfrastureServices;
 using Dapper;
-using SkySensorsAPI.Models;
 using NpgsqlTypes;
 using System.Net.NetworkInformation;
 using Faithlife.Utility.Dapper;
+using SkySensorsAPI.Models.Infrastructure;
 namespace SkySensorsAPI.Repositories;
 
-public interface IWheatherStationRepository
+public interface IWeatherStationRepository
 {
 	Task<WeatherStation> GetWheaterStation(string macAddress);
 	Task<IEnumerable<WeatherStation>> GetWheaterStations();
 	Task<IEnumerable<Sensor>> GetSensorsByMacAddress(string macAddress);
-	Task<IEnumerable<SensorValueDTO>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
+	Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
 	Task UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat);
 	Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
 	Task InsertSensorValues(SensorValue[] sensorValues);
-	Task<TimeSlot?> GetMacAddressTimeSlot(PhysicalAddress macAddress);
-	Task<int> GetBestTimeSlot();
-	Task InsertTimeSlot(PhysicalAddress macAddress, int secondsNumber);
 }
 
-public class WheatherStationRepository(
-	IPostgreSqlInfrastureService postgreSqlService) : IWheatherStationRepository
+public class WeatherStationRepository(
+	IPostgreSqlInfrastureService postgreSqlService) : IWeatherStationRepository
 {
 	public async Task<WeatherStation> GetWheaterStation(string macAddress)
 	{
@@ -47,10 +44,10 @@ public class WheatherStationRepository(
 				}));
 	}
 
-	public async Task<IEnumerable<SensorValueDTO>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
+	public async Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
-			(con) => con.QueryAsync<SensorValueDTO>("SELECT unix_time, value FROM calibrated_sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime;",
+			(con) => con.QueryAsync<SensorValue>("SELECT unix_time, value FROM calibrated_sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime;",
 			new
 			{
 				MacAddress = macAddress,
@@ -88,31 +85,5 @@ public class WheatherStationRepository(
 	{
 		await postgreSqlService.ExecuteQueryAsync((con) =>
 			con.BulkInsertAsync("INSERT INTO sensor_values(mac_address, type, unix_time, value) VALUES(@MacAddress, @Type, @UnixTime, @Value) ...", sensorValues));
-	}
-
-	public async Task<TimeSlot?> GetMacAddressTimeSlot(PhysicalAddress macAddress)
-	{
-		return await postgreSqlService.ExecuteQueryAsync(
-			   (con) => con.QueryFirstOrDefaultAsync<TimeSlot>("select mac_address, seconds_number from time_slots ts where mac_address = @MacAddress;",
-			   new
-			   {
-				   MacAddress = macAddress
-			   }));
-	}
-	public async Task<int> GetBestTimeSlot()
-	{
-		return await postgreSqlService.ExecuteQueryAsync(
-			   (con) => con.QueryFirstAsync<int>("SELECT get_possible_time_slot();"));
-	}
-	public async Task InsertTimeSlot(PhysicalAddress macAddress, int secondsNumber)
-	{
-		await postgreSqlService.ExecuteQueryAsync(
-			   (con) => con.ExecuteAsync("INSERT INTO public.time_slots (mac_address, seconds_number) VALUES(@MacAddress, @SecondsNumber);",
-			   new
-			   {
-				   MacAddress = macAddress,
-				   SecondsNumber = secondsNumber
-			   }
-			   ));
 	}
 }
