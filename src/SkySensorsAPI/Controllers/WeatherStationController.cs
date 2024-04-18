@@ -11,9 +11,12 @@ public class WeatherStationController(
 	IWeatherStationAppService weatherStationAppService) : ControllerBase
 {
 	[HttpGet]
-	public async Task<ActionResult<WeatherStationDTO>> GetWeatherStation(string macAddress, long startTime = 1713260957000, long endTime = 1713260957000)
+	public async Task<ActionResult<List<WeatherStationDTO>>> GetWeatherStation(string macAddress, long startTime = 1713260957000, long endTime = 1713260957000)
 	{
-		return await weatherStationAppService.GetWeatherStation(macAddress, startTime, endTime);
+		return new List<WeatherStationDTO>()
+		{
+			await weatherStationAppService.GetWeatherStation(macAddress, startTime, endTime)
+		};
 	}
 
 	[HttpGet("all")]
