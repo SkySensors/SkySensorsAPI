@@ -19,13 +19,13 @@ jobs:
         with:
           pathtosettingsfile: ./src/SkySensorsAPI/appsettings.json
           name: "Postgres"
-          connectionstring: ${{ secrets.CONNECTING_STRING }}
+          connectionstring: ${{ secrets.CONNECTING_STRING_TEST }}
       - name: edit connection string
         uses: benday-inc/edit-dbconnstr-in-appsettings@main
         with:
           pathtosettingsfile: ./src/SkySensorsAPI.Tests/appsettings.tests.json
           name: "Postgres"
-          connectionstring: ${{ secrets.CONNECTING_STRING }}
+          connectionstring: ${{ secrets.CONNECTING_STRING_TEST }}
       - name: Build and test
         working-directory: ./src/
         run: docker compose --file './docker-compose.yml' --file './docker-compose.override.yml' up --build --abort-on-container-exit --exit-code-from sky-sensors-api.tests sky-sensors-api.tests
