@@ -1,37 +1,32 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SkySensorsAPI.ApplicationServices;
-using SkySensorsAPI.Models;
+using SkySensorsAPI.Models.Dto;
 
 namespace SkySensorsAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class WheatherStationController(
+	ITimeSlotAppService timeSlotAppService,
 	IWheatherStationAppService weatherStationService) : ControllerBase
 {
 	[HttpGet]
-	public async Task<IActionResult> GetWeatherStation(string? macAddress, long startTime = 1713260957000, long endTime = 1713260957000)
+	public async Task<ActionResult<WeatherStationDTO>> GetWeatherStation(string macAddress, long startTime = 1713260957000, long endTime = 1713260957000)
 	{
-		if (macAddress == null)
-		{
-			List<WeatherStationDTO> weatherStations = await weatherStationService.GetWeatherStations(startTime, endTime);
+		return await weatherStationService.GetWeatherStation(macAddress, startTime, endTime);
+	}
 
-			return weatherStations == null ? NotFound() : Ok(weatherStations);
-		}
-
-		// For compatability with frontend send the station in an array
-		List<WeatherStationDTO> weatherStation = [];
-
-		weatherStation.Add(await weatherStationService.GetWeatherStation(macAddress, startTime, endTime));
-
-		return weatherStation == null ? NotFound() : Ok(weatherStation);
+	[HttpGet("all")]
+	public async Task<ActionResult<List<WeatherStationDTO>>> GetAllWeatherStations(long startTime = 1713260957000, long endTime = 1713260957000)
+	{
+		List<WeatherStationDTO> weatherStations = await weatherStationService.GetWeatherStations(startTime, endTime);
+		return weatherStations == null ? NotFound() : Ok(weatherStations);
 	}
 
 	[HttpPost]
 	public async Task<IActionResult> AddSensorValues(MeasuredSensorValuesDTO[] measuredSensorValuesDTOs)
 	{
 		await weatherStationService.InsertMeasuredSensorValues(measuredSensorValuesDTOs);
-
 		return Ok();
 	}
 
@@ -48,17 +43,15 @@ public class WheatherStationController(
 		}
 
 		// Find the time schedule that would fit for this device
-		TimeSlotDto timeSlotDTO = await weatherStationService.UpsertTimeSlot(weatherStation.MacAddress);
+		TimeSlotDto timeSlotDTO = await timeSlotAppService.UpsertTimeSlot(weatherStation.MacAddress);
 
 		return timeSlotDTO;
 	}
 
 	[HttpGet("list")]
-	public async Task<IActionResult> GetWeatherStationList()
+	public async Task<ActionResult<WeatherStationLocationAndMacDTO>> GetAllLocationsAndMacAddresses()
 	{
-		IEnumerable<BasicWeatherStationDTO> weatherStations = await weatherStationService.GetWeatherStationLists();
-
+		IEnumerable<WeatherStationLocationAndMacDTO> weatherStations = await weatherStationService.GetWeatherStationLists();
 		return weatherStations == null ? NotFound() : Ok(weatherStations);
 	}
-
 }
