@@ -7,7 +7,7 @@ namespace SkySensorsAPI.ApplicationServices;
 
 public interface IWeatherStationAppService
 {
-	public Task<WeatherStationDTO> GetWeatherStation(string macAddress, long startTime, long endTime);
+	public Task<WeatherStationDTO> GetWeatherStation(PhysicalAddress macAddress, long startTime, long endTime);
 	public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime);
 	public Task<IEnumerable<WeatherStationLocationAndMacDTO>> GetWeatherStationLists();
 	public Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic);
@@ -18,8 +18,13 @@ public interface IWeatherStationAppService
 public class WeatherStationAppService(
 	IWeatherStationRepository weatherStationRepository) : IWeatherStationAppService
 {
-	public async Task<WeatherStationDTO> GetWeatherStation(string macAddress, long startTime, long endTime)
+	public async Task<WeatherStationDTO> GetWeatherStation(PhysicalAddress macAddress, long startTime, long endTime)
 	{
+		if (startTime > endTime)
+		{
+			throw new ArgumentException("Start time is bigger than end time");
+		}
+
 		WeatherStation weatherStation = await weatherStationRepository.GetWheaterStation(macAddress);
 		IEnumerable<Sensor> sensors = await weatherStationRepository.GetSensorsByMacAddress(macAddress);
 
@@ -29,12 +34,17 @@ public class WeatherStationAppService(
 
 	public async Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime)
 	{
+		if(startTime > endTime)
+		{
+			throw new ArgumentException("Start time is bigger than end time");
+		}
+
 		IEnumerable<WeatherStation> weatherStations = await weatherStationRepository.GetWheaterStations();
 
 		List<WeatherStationDTO> weatherStationsDTO = [];
 		foreach (WeatherStation weatherStation in weatherStations)
 		{
-			IEnumerable<Sensor> sensorDatas = await weatherStationRepository.GetSensorsByMacAddress(weatherStation.MacAddress.ToString());
+			IEnumerable<Sensor> sensorDatas = await weatherStationRepository.GetSensorsByMacAddress(weatherStation.MacAddress);
 			List<MeasuredSensorValuesDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas, startTime, endTime);
 			weatherStationsDTO.Add(WeatherStationDTO.FromWeatherStation(weatherStation, sensors));
 		}

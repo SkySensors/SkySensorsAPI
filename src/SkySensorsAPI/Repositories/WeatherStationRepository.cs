@@ -8,9 +8,9 @@ namespace SkySensorsAPI.Repositories;
 
 public interface IWeatherStationRepository
 {
-	Task<WeatherStation> GetWheaterStation(string macAddress);
+	Task<WeatherStation> GetWheaterStation(PhysicalAddress macAddress);
 	Task<IEnumerable<WeatherStation>> GetWheaterStations();
-	Task<IEnumerable<Sensor>> GetSensorsByMacAddress(string macAddress);
+	Task<IEnumerable<Sensor>> GetSensorsByMacAddress(PhysicalAddress macAddress);
 	Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
 	Task UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat);
 	Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
@@ -20,11 +20,11 @@ public interface IWeatherStationRepository
 public class WeatherStationRepository(
 	IPostgreSqlInfrastureService postgreSqlService) : IWeatherStationRepository
 {
-	public async Task<WeatherStation> GetWheaterStation(string macAddress)
+	public async Task<WeatherStation> GetWheaterStation(PhysicalAddress macAddress)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
 			(con) => con.QueryFirstAsync<WeatherStation>("SELECT mac_address, lon, lat FROM weather_stations WHERE mac_address = @MacAddr;",
-			new { MacAddr = PhysicalAddress.Parse(macAddress), NpgsqlDbType = NpgsqlDbType.MacAddr }));
+			new { MacAddr = macAddress, NpgsqlDbType = NpgsqlDbType.MacAddr }));
 	}
 
 	public async Task<IEnumerable<WeatherStation>> GetWheaterStations()
@@ -33,13 +33,13 @@ public class WeatherStationRepository(
 			(con) => con.QueryAsync<WeatherStation>("SELECT mac_address, lon, lat FROM weather_stations;"));
 	}
 
-	public async Task<IEnumerable<Sensor>> GetSensorsByMacAddress(string macAddress)
+	public async Task<IEnumerable<Sensor>> GetSensorsByMacAddress(PhysicalAddress macAddress)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
 			(con) => con.QueryAsync<Sensor>("SELECT mac_address, type FROM sensors WHERE mac_address = @MacAddress;",
 				new
 				{
-					MacAddress = PhysicalAddress.Parse(macAddress),
+					MacAddress = macAddress,
 					NpgsqlDbType = NpgsqlDbType.MacAddr
 				}));
 	}

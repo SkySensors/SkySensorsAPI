@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SkySensorsAPI.ApplicationServices;
 using SkySensorsAPI.Models.DTO;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
 
 namespace SkySensorsAPI.Controllers;
 
@@ -15,7 +17,7 @@ public class WeatherStationController(
 	{
 		return new List<WeatherStationDTO>()
 		{
-			await weatherStationAppService.GetWeatherStation(macAddress, startTime, endTime)
+			await weatherStationAppService.GetWeatherStation(PhysicalAddress.Parse(macAddress), startTime, endTime)
 		};
 	}
 
@@ -52,7 +54,7 @@ public class WeatherStationController(
 	}
 
 	[HttpGet("list")]
-	public async Task<ActionResult<WeatherStationLocationAndMacDTO>> GetAllLocationsAndMacAddresses()
+	public async Task<ActionResult<IEnumerable<WeatherStationLocationAndMacDTO>>> GetAllLocationsAndMacAddresses()
 	{
 		IEnumerable<WeatherStationLocationAndMacDTO> weatherStations = await weatherStationAppService.GetWeatherStationLists();
 		return weatherStations == null ? NotFound() : Ok(weatherStations);
