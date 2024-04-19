@@ -20,7 +20,7 @@ public class PhysicalAddressConverter : JsonConverter<PhysicalAddress>
 				throw new JsonException($"Invalid MAC address format: {addressString}");
 			}
 		}
-
+		
 		throw new JsonException($"Unexpected token type: {reader.TokenType}");
 	}
 

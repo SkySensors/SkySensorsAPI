@@ -1,6 +1,7 @@
 using Serilog;
 using SkySensorsAPI.ApplicationServices;
 using SkySensorsAPI.InfrastureServices;
+using SkySensorsAPI.Middlewares;
 using SkySensorsAPI.Repositories;
 
 Log.Logger = new LoggerConfiguration()
@@ -34,6 +35,7 @@ try
 
     app.MapControllers();
 	app.UseDeveloperExceptionPage();
+	app.UseMiddleware<ExceptionHandlerMiddleware>();
 	app.UseSwagger();
 	app.MapHealthChecks("healthcheck");
 	app.UseSwaggerUI(c =>

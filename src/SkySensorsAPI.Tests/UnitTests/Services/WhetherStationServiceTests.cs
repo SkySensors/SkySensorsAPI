@@ -10,45 +10,131 @@ using System.Net.NetworkInformation;
 
 namespace SkySensorsAPI.Tests.UnitTests.Services;
 
-internal class WheatherStationServiceTests
+internal class WheatherStationServiceAppTests
 {
+	private const string validMacAddressStr = "00:00:00:00:00:00";
+	private readonly PhysicalAddress validMacAddress = PhysicalAddress.Parse(validMacAddressStr);
+	private readonly WeatherStation validWeatherStation = new()
+	{
+		Lat = 0,
+		Lon = 0,
+		MacAddress = PhysicalAddress.Parse(validMacAddressStr)
+	};
+	private readonly List<SensorValue> validSensorValues =
+	[
+		new SensorValue
+		{
+			MacAddress = PhysicalAddress.Parse(validMacAddressStr),
+			Type = "Temperature",
+			UnixTime = 1713355703952,
+			Value = 10,
+		}
+	];
+
+
 	[Test, AutoDomainData]
 	public async Task GetWeatherStation_WhenEverythingIsValid_ReturnsWeatherStation(
 		[Frozen] IWeatherStationRepository wheatherStationRepository,
 		WeatherStationAppService sut)
 	{
 		// Arrange
-		string mac = "00:00:00:00:00:00";
-		wheatherStationRepository.GetWheaterStation(mac)
-			.Returns(new WeatherStation()
-		{
-			Lat = 0,
-			Lon = 0,
-			MacAddress = PhysicalAddress.Parse(mac)
-		});
-		wheatherStationRepository.GetSensorsByMacAddress(mac)
-			.Returns(new List<Sensor>()
-		{
-			new Sensor(PhysicalAddress.Parse(mac), SensorType.Temperature)
-		});
-		wheatherStationRepository.GetSensorValuesByMacAddress(PhysicalAddress.Parse(mac), "Temperature", Arg.Any<long>(), Arg.Any<long>())
-			.Returns(new List<SensorValue>()
-		{
-			new SensorValue
-			{
-				MacAddress = PhysicalAddress.Parse(mac),
-				Type = "Temperature",
-				UnixTime = 1713355703952,
-				Value = 10,
-			}
-		});
+		wheatherStationRepository.GetWheaterStation(validMacAddress)
+			.Returns(validWeatherStation);
+		wheatherStationRepository.GetSensorsByMacAddress(validMacAddress)
+			.Returns([new Sensor(validMacAddress, SensorType.Temperature)]);
+		wheatherStationRepository.GetSensorValuesByMacAddress(validMacAddress, "Temperature", 1713355703952, 1713442103952)
+			.Returns(validSensorValues);
 
 		// Act
-		WeatherStationDTO result = await sut.GetWeatherStation(mac, 1713355703952, 1713442103952);
+		WeatherStationDTO result = await sut.GetWeatherStation(validMacAddress, 1713355703952, 1713442103952);
 
 		// Assert
 		result.Should().NotBeNull();
-		result.MacAddress.Should().Be(PhysicalAddress.Parse(mac));
-		_ = wheatherStationRepository.Received(1).GetWheaterStation(mac);
+		result.MacAddress.Should().Be(validMacAddress);
+		_ = wheatherStationRepository.Received(1).GetWheaterStation(validMacAddress);
+	}
+
+	[Test, AutoDomainData]
+	public void GetWeatherStation_WhenMacAddressIsInBadFormat_ThrowsException(
+	[Frozen] IWeatherStationRepository weatherStationRepository,
+	WeatherStationAppService sut)
+	{
+
+		// Act and Assert
+
+		FormatException ex = Assert.ThrowsAsync<FormatException>(async () => await sut.GetWeatherStation(PhysicalAddress.Parse("123"), 1713355703952, 1713442103952))
+			?? throw new NullReferenceException();
+		_ = weatherStationRepository.Received(0).GetWheaterStation(validMacAddress);
+	}
+
+	[Test, AutoDomainData]
+	public void GetWeatherStation_WhenStartDateIsLargerThanEndDate_ThrowsException(
+		[Frozen] IWeatherStationRepository weatherStationRepository,
+		WeatherStationAppService sut)
+	{
+		// Act and Assert
+		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStation(validMacAddress, 1713442103952, 1713355703952))
+			?? throw new NullReferenceException();
+		ex.Message.Should().Be("Start time is bigger than end time");
+		_ = weatherStationRepository.Received(0).GetWheaterStation(validMacAddress);
+	}
+
+	[Test, AutoDomainData]
+	public async Task InsertMeasuredSensorValues_WhenEverythingIsValid_ReturnsVoid(
+		[Frozen] IWeatherStationRepository weatherStationAppService,
+		WeatherStationAppService sut)
+	{
+		// Arrange
+		weatherStationAppService.InsertSensorValues(validSensorValues.ToArray())
+			.Returns(Task.CompletedTask);
+		MeasuredSensorValuesDTO[] measuredSensorValuesDTO =
+		[
+			new MeasuredSensorValuesDTO
+			{
+				MacAddress = validMacAddress,
+				Type = SensorType.Temperature,
+				SensorValues = [new SensorValueDTO() { Value = 1, UnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() }]
+			}
+		];
+
+		// Act
+		await sut.InsertMeasuredSensorValues(measuredSensorValuesDTO);
+
+		// Assert
+		weatherStationAppService.Received(1);
+	}
+
+	[Test, AutoDomainData]
+	public async Task GetWeatherStations_WhenEverythingIsValid_ReturnsWeatherStations(
+		[Frozen] IWeatherStationRepository weatherStationRepository,
+		WeatherStationAppService sut)
+	{
+		// Arrange
+		weatherStationRepository.GetWheaterStations().Returns(new List<WeatherStation> { validWeatherStation });
+
+		weatherStationRepository.GetSensorsByMacAddress(validMacAddress)
+			.Returns([new Sensor(validMacAddress, SensorType.Temperature)]);
+
+		weatherStationRepository.GetSensorValuesByMacAddress(validMacAddress, "Temperature", 1713355703952, 1713442103952)
+			.Returns(validSensorValues);
+
+		// Act
+		List<WeatherStationDTO> result = await sut.GetWeatherStations(1713355703952, 1713442103952);
+
+		// Assert
+		result.Should().NotBeNull();
+		_ = weatherStationRepository.Received(1).GetWheaterStations();
+	}
+
+	[Test, AutoDomainData]
+	public void GetWeatherStations_WhenStartDateIsLargerThanEndDate_ThrowsException(
+	[Frozen] IWeatherStationRepository weatherStationRepository,
+	WeatherStationAppService sut)
+	{
+		// Act and assert
+		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStations(1713442103952, 1713355703952))
+			?? throw new NullReferenceException();
+		ex.Message.Should().Be("Start time is bigger than end time");
+		_ = weatherStationRepository.Received(0).GetWheaterStations();
 	}
 }
