@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using SkySensorsAPI.Models.DTO;
 using System.Net;
-using System.Net.Mail;
 using System.Net.NetworkInformation;
 using System.Text.Json;
 
