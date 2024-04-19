@@ -2,4 +2,4 @@
 
 namespace SkySensorsAPI.Models.Infrastructure;
 
-public record class TimeSlot(int SecondsNumber, PhysicalAddress MacAddress);
+public record class TimeSlot(PhysicalAddress MacAddress, int SecondsNumber = 0);
