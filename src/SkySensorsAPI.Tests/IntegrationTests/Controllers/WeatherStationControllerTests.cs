@@ -67,7 +67,6 @@ internal class WeatherStationControllerTests : IntegrationTests
 		// Assert
 		string data = await response.Content.ReadAsStringAsync();
 		data.Should().NotBeNullOrEmpty();
-		data.Should().Be("a");
 
 		List<WeatherStationDTO>? weatherStations =
 			JsonSerializer.Deserialize<List<WeatherStationDTO>>(data, defaultOptions);
@@ -87,7 +86,7 @@ internal class WeatherStationControllerTests : IntegrationTests
 		string data = await response.Content.ReadAsStringAsync();
 		data.Should().NotBeNullOrEmpty();
 
-		List<WeatherStationLocationAndMacDTO>? weatherStationLocationAndMacs = 
+		List<WeatherStationLocationAndMacDTO>? weatherStationLocationAndMacs =
 			JsonSerializer.Deserialize<List<WeatherStationLocationAndMacDTO>>(data, defaultOptions);
 
 		weatherStationLocationAndMacs.Should().NotBeNull();
