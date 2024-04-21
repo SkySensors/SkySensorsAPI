@@ -12,8 +12,8 @@ internal class TimeControllerTest : IntegrationTests
 	{
 		// Arrange
 		DateTimeOffset now = DateTimeOffset.UtcNow;
-		long rangeStart = DateTimeOffset.UtcNow.AddMinutes(-1).ToUnixTimeMilliseconds();
-		long rangeEnd = DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeMilliseconds();
+		long rangeStart = now.AddMinutes(-1).ToUnixTimeMilliseconds();
+		long rangeEnd = now.AddMinutes(1).ToUnixTimeMilliseconds();
 
 		// Act
 		HttpResponseMessage response = await HttpClient.GetAsync(UrlPath );
