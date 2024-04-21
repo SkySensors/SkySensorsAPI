@@ -10,7 +10,7 @@ using System.Net.NetworkInformation;
 
 namespace SkySensorsAPI.Tests.UnitTests.Services;
 
-internal class WheatherStationServiceAppTests
+internal class WeatherStationServiceAppTests
 {
 	private const string validMacAddressStr = "00:00:00:00:00:00";
 	private readonly PhysicalAddress validMacAddress = PhysicalAddress.Parse(validMacAddressStr);
@@ -34,15 +34,15 @@ internal class WheatherStationServiceAppTests
 
 	[Test, AutoDomainData]
 	public async Task GetWeatherStation_WhenEverythingIsValid_ReturnsWeatherStation(
-		[Frozen] IWeatherStationRepository wheatherStationRepository,
+		[Frozen] IWeatherStationRepository weatherStationRepository,
 		WeatherStationAppService sut)
 	{
 		// Arrange
-		wheatherStationRepository.GetWheaterStation(validMacAddress)
+		weatherStationRepository.GetWeatherStation(validMacAddress)
 			.Returns(validWeatherStation);
-		wheatherStationRepository.GetSensorsByMacAddress(validMacAddress)
+		weatherStationRepository.GetSensorsByMacAddress(validMacAddress)
 			.Returns([new Sensor(validMacAddress, SensorType.Temperature)]);
-		wheatherStationRepository.GetSensorValuesByMacAddress(validMacAddress, "Temperature", 1713355703952, 1713442103952)
+		weatherStationRepository.GetSensorValuesByMacAddress(validMacAddress, "Temperature", 1713355703952, 1713442103952)
 			.Returns(validSensorValues);
 
 		// Act
@@ -51,7 +51,7 @@ internal class WheatherStationServiceAppTests
 		// Assert
 		result.Should().NotBeNull();
 		result.MacAddress.Should().Be(validMacAddress);
-		_ = wheatherStationRepository.Received(1).GetWheaterStation(validMacAddress);
+		_ = weatherStationRepository.Received(1).GetWeatherStation(validMacAddress);
 	}
 
 	[Test, AutoDomainData]
@@ -64,7 +64,7 @@ internal class WheatherStationServiceAppTests
 
 		FormatException ex = Assert.ThrowsAsync<FormatException>(async () => await sut.GetWeatherStation(PhysicalAddress.Parse("123"), 1713355703952, 1713442103952))
 			?? throw new NullReferenceException();
-		_ = weatherStationRepository.Received(0).GetWheaterStation(validMacAddress);
+		_ = weatherStationRepository.Received(0).GetWeatherStation(validMacAddress);
 	}
 
 	[Test, AutoDomainData]
@@ -76,7 +76,7 @@ internal class WheatherStationServiceAppTests
 		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStation(validMacAddress, 1713442103952, 1713355703952))
 			?? throw new NullReferenceException();
 		ex.Message.Should().Be("Start time is bigger than end time");
-		_ = weatherStationRepository.Received(0).GetWheaterStation(validMacAddress);
+		_ = weatherStationRepository.Received(0).GetWeatherStation(validMacAddress);
 	}
 
 	[Test, AutoDomainData]
@@ -110,7 +110,7 @@ internal class WheatherStationServiceAppTests
 		WeatherStationAppService sut)
 	{
 		// Arrange
-		weatherStationRepository.GetWheaterStations().Returns(new List<WeatherStation> { validWeatherStation });
+		weatherStationRepository.GetWeatherStations().Returns(new List<WeatherStation> { validWeatherStation });
 
 		weatherStationRepository.GetSensorsByMacAddress(validMacAddress)
 			.Returns([new Sensor(validMacAddress, SensorType.Temperature)]);
@@ -123,7 +123,7 @@ internal class WheatherStationServiceAppTests
 
 		// Assert
 		result.Should().NotBeNull();
-		_ = weatherStationRepository.Received(1).GetWheaterStations();
+		_ = weatherStationRepository.Received(1).GetWeatherStations();
 	}
 
 	[Test, AutoDomainData]
@@ -135,6 +135,6 @@ internal class WheatherStationServiceAppTests
 		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStations(1713442103952, 1713355703952))
 			?? throw new NullReferenceException();
 		ex.Message.Should().Be("Start time is bigger than end time");
-		_ = weatherStationRepository.Received(0).GetWheaterStations();
+		_ = weatherStationRepository.Received(0).GetWeatherStations();
 	}
 }

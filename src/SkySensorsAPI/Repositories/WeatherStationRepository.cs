@@ -8,8 +8,8 @@ namespace SkySensorsAPI.Repositories;
 
 public interface IWeatherStationRepository
 {
-	Task<WeatherStation> GetWheaterStation(PhysicalAddress macAddress);
-	Task<IEnumerable<WeatherStation>> GetWheaterStations();
+	Task<WeatherStation> GetWeatherStation(PhysicalAddress macAddress);
+	Task<IEnumerable<WeatherStation>> GetWeatherStations();
 	Task<IEnumerable<Sensor>> GetSensorsByMacAddress(PhysicalAddress macAddress);
 	Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
 	Task UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat);
@@ -20,14 +20,14 @@ public interface IWeatherStationRepository
 public class WeatherStationRepository(
 	IPostgreSqlInfrastureService postgreSqlService) : IWeatherStationRepository
 {
-	public async Task<WeatherStation> GetWheaterStation(PhysicalAddress macAddress)
+	public async Task<WeatherStation> GetWeatherStation(PhysicalAddress macAddress)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
 			(con) => con.QueryFirstAsync<WeatherStation>("SELECT mac_address, lon, lat FROM weather_stations WHERE mac_address = @MacAddr;",
 			new { MacAddr = macAddress, NpgsqlDbType = NpgsqlDbType.MacAddr }));
 	}
 
-	public async Task<IEnumerable<WeatherStation>> GetWheaterStations()
+	public async Task<IEnumerable<WeatherStation>> GetWeatherStations()
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
 			(con) => con.QueryAsync<WeatherStation>("SELECT mac_address, lon, lat FROM weather_stations;"));
