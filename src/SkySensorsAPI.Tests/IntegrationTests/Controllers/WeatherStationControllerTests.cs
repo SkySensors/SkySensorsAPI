@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Net.NetworkInformation;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SkySensorsAPI.Tests.IntegrationTests.Controllers;
 
@@ -105,6 +106,9 @@ internal class WeatherStationControllerTests : IntegrationTests
 		// Act
 		//var t = ;
 		HttpResponseMessage response = await HttpClient.GetAsync(UrlPath + $"?macAddress={validMacAddressStr}&startTime={validStartTime}&endTime={validEndTime}");
+		string data = await response.Content.ReadAsStringAsync();
+
+		data.Should().Be("a" + data);
 		// Assert
 		response.StatusCode.Should().Be(HttpStatusCode.NotFound);
 	}
