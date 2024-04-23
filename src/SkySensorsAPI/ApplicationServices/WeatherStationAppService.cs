@@ -25,7 +25,7 @@ public class WeatherStationAppService(
 			throw new ArgumentException("Start time is bigger than end time");
 		}
 
-		WeatherStation weatherStation = await weatherStationRepository.GetWheaterStation(macAddress);
+		WeatherStation weatherStation = await weatherStationRepository.GetWeatherStation(macAddress);
 		IEnumerable<Sensor> sensors = await weatherStationRepository.GetSensorsByMacAddress(macAddress);
 
 		List<MeasuredSensorValuesDTO> measuredSensorValuesDTO = await MapSensorsAndSensorValuesToDTO(sensors, startTime, endTime);
@@ -34,12 +34,12 @@ public class WeatherStationAppService(
 
 	public async Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime)
 	{
-		if(startTime > endTime)
+		if (startTime > endTime)
 		{
 			throw new ArgumentException("Start time is bigger than end time");
 		}
 
-		IEnumerable<WeatherStation> weatherStations = await weatherStationRepository.GetWheaterStations();
+		IEnumerable<WeatherStation> weatherStations = await weatherStationRepository.GetWeatherStations();
 
 		List<WeatherStationDTO> weatherStationsDTO = [];
 		foreach (WeatherStation weatherStation in weatherStations)
@@ -54,7 +54,7 @@ public class WeatherStationAppService(
 
 	public async Task<IEnumerable<WeatherStationLocationAndMacDTO>> GetWeatherStationLists()
 	{
-		IEnumerable<WeatherStation> weatherStations = await weatherStationRepository.GetWheaterStations();
+		IEnumerable<WeatherStation> weatherStations = await weatherStationRepository.GetWeatherStations();
 		return weatherStations.Select(w => WeatherStationLocationAndMacDTO.FromWeatherStation(w));
 	}
 

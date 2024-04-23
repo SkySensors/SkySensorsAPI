@@ -86,7 +86,7 @@ internal class WeatherStationControllerTests : IntegrationTests
 		string data = await response.Content.ReadAsStringAsync();
 		data.Should().NotBeNullOrEmpty();
 
-		List<WeatherStationLocationAndMacDTO>? weatherStationLocationAndMacs = 
+		List<WeatherStationLocationAndMacDTO>? weatherStationLocationAndMacs =
 			JsonSerializer.Deserialize<List<WeatherStationLocationAndMacDTO>>(data, defaultOptions);
 
 		weatherStationLocationAndMacs.Should().NotBeNull();
