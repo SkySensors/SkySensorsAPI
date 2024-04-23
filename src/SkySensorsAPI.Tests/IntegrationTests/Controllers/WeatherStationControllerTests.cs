@@ -106,9 +106,7 @@ internal class WeatherStationControllerTests : IntegrationTests
 		// Act
 		//var t = ;
 		HttpResponseMessage response = await HttpClient.GetAsync(UrlPath + $"?macAddress={validMacAddressStr}&startTime={validStartTime}&endTime={validEndTime}");
-		string data = await response.Content.ReadAsStringAsync();
 
-		data.Should().Be("a" + data);
 		// Assert
 		response.StatusCode.Should().Be(HttpStatusCode.NotFound);
 	}
@@ -119,8 +117,6 @@ internal class WeatherStationControllerTests : IntegrationTests
 		// Arrange
 		// Act
 		HttpResponseMessage response = await HttpClient.GetAsync(UrlPath + $"?macAddress={validMacAddressStr}&startTime={validEndTime}&endTime={validStartTime}");
-		string data = await response.Content.ReadAsStringAsync();
-		data.Should().Be("a" + data);
 
 		// Assert
 		response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

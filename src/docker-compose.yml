@@ -45,7 +45,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgresdb
+      postgresdb:
+        condition: service_healthy
   sky-sensors-api.tests:
     container_name: sky-sensors-api.tests
     image: sky-sensors-api.tests:latest
