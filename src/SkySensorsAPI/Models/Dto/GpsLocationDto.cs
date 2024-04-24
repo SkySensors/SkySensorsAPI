@@ -1,3 +1,3 @@
-﻿namespace SkySensorsAPI.Models.Dto;
+﻿namespace SkySensorsAPI.Models.DTO;
 
-public record struct GpsLocationDto(float Longitude, float Latitude);
+public record struct GpsLocationDTO(float Longitude, float Latitude);
