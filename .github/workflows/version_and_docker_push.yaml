@@ -64,15 +64,6 @@ jobs:
                 git push origin $TAG_VERSION
 
             #### ONLY RUN IF Triggered on new Tag ####
-            # Change connection string 
-            - name: edit connection string
-              if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-              uses: benday-inc/edit-dbconnstr-in-appsettings@main
-              with:
-                pathtosettingsfile: ./src/SkySensorsAPI/appsettings.json
-                name: "Postgres"
-                connectionstring: ${{ secrets.CONNECTING_STRING }}
-
             # Initialize and configure Docker Buildx, a modern building toolkit.
             - name: Setup Docker buildx
               if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -122,7 +113,7 @@ jobs:
               uses: fjogeleit/http-request-action@v1
               if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
               with:
-                url: 'https://portainer.viften.elkok.dk/api/stacks/webhooks/499d367b-2212-40f4-9981-4b9c7d18c57e'
+                url: ${{env.GLOBAL_STACK_WEBHOOK}}
                 method: 'POST'
                 data: ''
                 preventFailureOnNoResponse: 'true'

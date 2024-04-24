@@ -1,4 +1,18 @@
 services:
+  postgresdb:
+    restart: unless-stopped
+    image: ghcr.io/skysensors/skygres:latest
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USERNAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    ports:
+      - "5432:5432"
   sky-sensors-api:
     container_name: sky-sensors-api
     image: sky-sensors-api:latest
@@ -6,6 +20,12 @@ services:
       context: .
       dockerfile: Dockerfile
       target: test
+    environment:
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASS=${DB_PASS}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
     healthcheck:
       test:
         [
@@ -22,7 +42,11 @@ services:
     security_opt:
       - no-new-privileges:true
     user: 1001:1001
-
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgresdb:
+        condition: service_healthy
   sky-sensors-api.tests:
     container_name: sky-sensors-api.tests
     image: sky-sensors-api.tests:latest

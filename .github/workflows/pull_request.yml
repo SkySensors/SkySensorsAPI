@@ -13,19 +13,18 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      # Change connection string 
-      - name: edit connection string
-        uses: benday-inc/edit-dbconnstr-in-appsettings@main
+      - name: Log into registry skygres
+        uses: docker/login-action@v3
         with:
-          pathtosettingsfile: ./src/SkySensorsAPI/appsettings.json
-          name: "Postgres"
-          connectionstring: ${{ secrets.CONNECTING_STRING_TEST }}
-      - name: edit connection string
-        uses: benday-inc/edit-dbconnstr-in-appsettings@main
-        with:
-          pathtosettingsfile: ./src/SkySensorsAPI.Tests/appsettings.tests.json
-          name: "Postgres"
-          connectionstring: ${{ secrets.CONNECTING_STRING_TEST }}
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and test
         working-directory: ./src/
         run: docker compose --file './docker-compose.yml' --file './docker-compose.override.yml' up --build --abort-on-container-exit --exit-code-from sky-sensors-api.tests sky-sensors-api.tests
+        env:
+          DB_USERNAME: postgres
+          DB_PASS: password
+          DB_HOST: postgresdb # Use the docker compose service name 
+          DB_PORT: 5432
+          DB_NAME: postgres
