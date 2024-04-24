@@ -7,7 +7,12 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:8080",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DB_USERNAME": "postgres",
+        "DB_NAME": "postgres",
+        "DB_PASS": "Kode1234!",
+        "DB_HOST": "skysensors.tplinkdns.com",
+        "DB_PORT": "54320"
       }
     }
   }

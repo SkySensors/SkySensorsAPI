@@ -13,18 +13,18 @@ public class WeatherStationController(
 	IWeatherStationAppService weatherStationAppService) : ControllerBase
 {
 	[HttpGet]
-	public async Task<ActionResult<List<WeatherStationDTO>>> GetWeatherStation(string macAddress, long startTime = 1713260957000, long endTime = 1713260957000)
+	public async Task<ActionResult<List<WeatherStationDTO>>> GetWeatherStation(string macAddress, long startTime = 1713260957000, long endTime = 1713260957000, bool isCalibrated = true)
 	{
 		return new List<WeatherStationDTO>()
 		{
-			await weatherStationAppService.GetWeatherStation(PhysicalAddress.Parse(macAddress), startTime, endTime)
+			await weatherStationAppService.GetWeatherStation(PhysicalAddress.Parse(macAddress), startTime, endTime, isCalibrated)
 		};
 	}
 
 	[HttpGet("all")]
-	public async Task<ActionResult<List<WeatherStationDTO>>> GetAllWeatherStations(long startTime = 1713260957000, long endTime = 1713260957000)
+	public async Task<ActionResult<List<WeatherStationDTO>>> GetAllWeatherStations(long startTime = 1713260957000, long endTime = 1713260957000, bool isCalibrated = true)
 	{
-		List<WeatherStationDTO> weatherStations = await weatherStationAppService.GetWeatherStations(startTime, endTime);
+		List<WeatherStationDTO> weatherStations = await weatherStationAppService.GetWeatherStations(startTime, endTime, isCalibrated);
 		return weatherStations == null ? NotFound() : Ok(weatherStations);
 	}
 
