@@ -11,10 +11,11 @@ public interface IWeatherStationRepository
 	Task<WeatherStation> GetWeatherStation(PhysicalAddress macAddress);
 	Task<IEnumerable<WeatherStation>> GetWeatherStations();
 	Task<IEnumerable<Sensor>> GetSensorsByMacAddress(PhysicalAddress macAddress);
-	Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
+	Task<IEnumerable<SensorValue>> GetCalibratedSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
 	Task UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat);
 	Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
 	Task InsertSensorValues(SensorValue[] sensorValues);
+	Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime);
 }
 
 public class WeatherStationRepository(
@@ -44,10 +45,23 @@ public class WeatherStationRepository(
 				}));
 	}
 
-	public async Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
+	public async Task<IEnumerable<SensorValue>> GetCalibratedSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
 			(con) => con.QueryAsync<SensorValue>("SELECT unix_time, value FROM calibrated_sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime;",
+			new
+			{
+				MacAddress = macAddress,
+				Type = type,
+				StartTime = startTime,
+				EndTime = endTime
+			}));
+	}
+
+	public async Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
+	{
+		return await postgreSqlService.ExecuteQueryAsync(
+			(con) => con.QueryAsync<SensorValue>("SELECT unix_time, value FROM sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime;",
 			new
 			{
 				MacAddress = macAddress,

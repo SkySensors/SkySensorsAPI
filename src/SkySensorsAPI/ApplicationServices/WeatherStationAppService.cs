@@ -7,8 +7,8 @@ namespace SkySensorsAPI.ApplicationServices;
 
 public interface IWeatherStationAppService
 {
-	public Task<WeatherStationDTO> GetWeatherStation(PhysicalAddress macAddress, long startTime, long endTime);
-	public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime);
+	public Task<WeatherStationDTO> GetWeatherStation(PhysicalAddress macAddress, long startTime, long endTime, bool isCalibrated);
+	public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime, bool isCalibrated);
 	public Task<IEnumerable<WeatherStationLocationAndMacDTO>> GetWeatherStationLists();
 	public Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic);
 	public Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type);
@@ -18,7 +18,7 @@ public interface IWeatherStationAppService
 public class WeatherStationAppService(
 	IWeatherStationRepository weatherStationRepository) : IWeatherStationAppService
 {
-	public async Task<WeatherStationDTO> GetWeatherStation(PhysicalAddress macAddress, long startTime, long endTime)
+	public async Task<WeatherStationDTO> GetWeatherStation(PhysicalAddress macAddress, long startTime, long endTime, bool isCalibrated)
 	{
 		if (startTime > endTime)
 		{
@@ -28,11 +28,11 @@ public class WeatherStationAppService(
 		WeatherStation weatherStation = await weatherStationRepository.GetWeatherStation(macAddress);
 		IEnumerable<Sensor> sensors = await weatherStationRepository.GetSensorsByMacAddress(macAddress);
 
-		List<MeasuredSensorValuesDTO> measuredSensorValuesDTO = await MapSensorsAndSensorValuesToDTO(sensors, startTime, endTime);
+		List<MeasuredSensorValuesDTO> measuredSensorValuesDTO = await MapSensorsAndSensorValuesToDTO(sensors, startTime, endTime, isCalibrated);
 		return WeatherStationDTO.FromWeatherStation(weatherStation, measuredSensorValuesDTO);
 	}
 
-	public async Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime)
+	public async Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime, bool isCalibrated)
 	{
 		if (startTime > endTime)
 		{
@@ -45,7 +45,7 @@ public class WeatherStationAppService(
 		foreach (WeatherStation weatherStation in weatherStations)
 		{
 			IEnumerable<Sensor> sensorDatas = await weatherStationRepository.GetSensorsByMacAddress(weatherStation.MacAddress);
-			List<MeasuredSensorValuesDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas, startTime, endTime);
+			List<MeasuredSensorValuesDTO> sensors = await MapSensorsAndSensorValuesToDTO(sensorDatas, startTime, endTime, isCalibrated);
 			weatherStationsDTO.Add(WeatherStationDTO.FromWeatherStation(weatherStation, sensors));
 		}
 
@@ -80,7 +80,7 @@ public class WeatherStationAppService(
 		await weatherStationRepository.InsertSensorValues(sensorValues);
 	}
 
-	private async Task<List<MeasuredSensorValuesDTO>> MapSensorsAndSensorValuesToDTO(IEnumerable<Sensor> sensors, long startTime, long endTime)
+	private async Task<List<MeasuredSensorValuesDTO>> MapSensorsAndSensorValuesToDTO(IEnumerable<Sensor> sensors, long startTime, long endTime, bool isCalibrated)
 	{
 		if (!sensors.Any())
 		{
@@ -90,7 +90,9 @@ public class WeatherStationAppService(
 		List<MeasuredSensorValuesDTO> measuredSensorValuesDTO = [];
 		foreach (Sensor sensor in sensors)
 		{
-			IEnumerable<SensorValue> sensorValues = await weatherStationRepository.GetSensorValuesByMacAddress(sensor.MacAddress, sensor.Type.ToString(), startTime, endTime);
+			IEnumerable<SensorValue> sensorValues = isCalibrated 
+				? await weatherStationRepository.GetCalibratedSensorValuesByMacAddress(sensor.MacAddress, sensor.Type.ToString(), startTime, endTime)
+				: await weatherStationRepository.GetSensorValuesByMacAddress(sensor.MacAddress, sensor.Type.ToString(), startTime, endTime);
 			measuredSensorValuesDTO.Add(new MeasuredSensorValuesDTO()
 			{
 				Type = sensor.Type,

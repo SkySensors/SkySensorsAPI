@@ -42,11 +42,11 @@ internal class WeatherStationServiceAppTests
 			.Returns(validWeatherStation);
 		weatherStationRepository.GetSensorsByMacAddress(validMacAddress)
 			.Returns([new Sensor(validMacAddress, SensorType.Temperature)]);
-		weatherStationRepository.GetSensorValuesByMacAddress(validMacAddress, "Temperature", 1713355703952, 1713442103952)
+		weatherStationRepository.GetCalibratedSensorValuesByMacAddress(validMacAddress, "Temperature", 1713355703952, 1713442103952)
 			.Returns(validSensorValues);
 
 		// Act
-		WeatherStationDTO result = await sut.GetWeatherStation(validMacAddress, 1713355703952, 1713442103952);
+		WeatherStationDTO result = await sut.GetWeatherStation(validMacAddress, 1713355703952, 1713442103952, true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -62,7 +62,7 @@ internal class WeatherStationServiceAppTests
 
 		// Act and Assert
 
-		FormatException ex = Assert.ThrowsAsync<FormatException>(async () => await sut.GetWeatherStation(PhysicalAddress.Parse("123"), 1713355703952, 1713442103952))
+		FormatException ex = Assert.ThrowsAsync<FormatException>(async () => await sut.GetWeatherStation(PhysicalAddress.Parse("123"), 1713355703952, 1713442103952, true))
 			?? throw new NullReferenceException();
 		_ = weatherStationRepository.Received(0).GetWeatherStation(validMacAddress);
 	}
@@ -73,7 +73,7 @@ internal class WeatherStationServiceAppTests
 		WeatherStationAppService sut)
 	{
 		// Act and Assert
-		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStation(validMacAddress, 1713442103952, 1713355703952))
+		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStation(validMacAddress, 1713442103952, 1713355703952, true))
 			?? throw new NullReferenceException();
 		ex.Message.Should().Be("Start time is bigger than end time");
 		_ = weatherStationRepository.Received(0).GetWeatherStation(validMacAddress);
@@ -115,11 +115,11 @@ internal class WeatherStationServiceAppTests
 		weatherStationRepository.GetSensorsByMacAddress(validMacAddress)
 			.Returns([new Sensor(validMacAddress, SensorType.Temperature)]);
 
-		weatherStationRepository.GetSensorValuesByMacAddress(validMacAddress, "Temperature", 1713355703952, 1713442103952)
+		weatherStationRepository.GetCalibratedSensorValuesByMacAddress(validMacAddress, "Temperature", 1713355703952, 1713442103952)
 			.Returns(validSensorValues);
 
 		// Act
-		List<WeatherStationDTO> result = await sut.GetWeatherStations(1713355703952, 1713442103952);
+		List<WeatherStationDTO> result = await sut.GetWeatherStations(1713355703952, 1713442103952, true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -132,7 +132,7 @@ internal class WeatherStationServiceAppTests
 	WeatherStationAppService sut)
 	{
 		// Act and assert
-		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStations(1713442103952, 1713355703952))
+		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStations(1713442103952, 1713355703952, true))
 			?? throw new NullReferenceException();
 		ex.Message.Should().Be("Start time is bigger than end time");
 		_ = weatherStationRepository.Received(0).GetWeatherStations();
