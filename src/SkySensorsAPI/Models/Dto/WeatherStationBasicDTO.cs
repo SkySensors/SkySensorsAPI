@@ -8,6 +8,6 @@ public class WeatherStationBasicDTO
 {
 	[JsonConverter(typeof(PhysicalAddressConverter))] // Needed to convert PhysicalAddress to string when used in endpoint result
 	public required PhysicalAddress MacAddress { get; set; }
-	public required GpsLocation GpsLocation { get; set; }
+	public required GpsLocationDTO GpsLocation { get; set; }
 	public SensorDataDTO[] Sensors { get; set; } = [];
 }

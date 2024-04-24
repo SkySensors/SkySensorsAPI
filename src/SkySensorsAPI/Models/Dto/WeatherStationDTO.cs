@@ -9,7 +9,7 @@ public class WeatherStationDTO
 {
 	[JsonConverter(typeof(PhysicalAddressConverter))] // Needed to convert PhysicalAddress to string when used in endpoint result
 	public required PhysicalAddress MacAddress { get; set; }
-	public required GpsLocation GpsLocation { get; set; }
+	public required GpsLocationDTO GpsLocation { get; set; }
 	public List<MeasuredSensorValuesDTO> Sensors { get; set; } = [];
 
 	public static WeatherStationDTO FromWeatherStation(WeatherStation weatherStation, List<MeasuredSensorValuesDTO> measuredSensorValuesDTO)
@@ -17,7 +17,7 @@ public class WeatherStationDTO
 		return new WeatherStationDTO()
 		{
 			MacAddress = weatherStation.MacAddress,
-			GpsLocation = new GpsLocation() { Latitude = weatherStation.Lat, Longitude = weatherStation.Lon },
+			GpsLocation = new GpsLocationDTO() { Latitude = weatherStation.Lat, Longitude = weatherStation.Lon },
 			Sensors = measuredSensorValuesDTO,
 		};
 	}

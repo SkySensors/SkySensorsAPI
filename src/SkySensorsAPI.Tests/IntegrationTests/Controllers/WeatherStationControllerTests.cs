@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Net.NetworkInformation;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SkySensorsAPI.Tests.IntegrationTests.Controllers;
 
@@ -29,7 +28,7 @@ internal class WeatherStationControllerTests : IntegrationTests
 	private readonly WeatherStationBasicDTO weatherStationBasicDTO = new WeatherStationBasicDTO()
 	{
 		MacAddress = PhysicalAddress.Parse(validMacAddressStr),
-		GpsLocation = new Models.GpsLocation() { Longitude = 55.00000F, Latitude = 12.0000F },
+		GpsLocation = new GpsLocationDTO() { Longitude = 55.00000F, Latitude = 12.0000F },
 		Sensors = validSensorDatas
 
 	};
