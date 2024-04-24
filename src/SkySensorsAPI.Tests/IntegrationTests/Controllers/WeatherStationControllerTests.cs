@@ -29,7 +29,7 @@ internal class WeatherStationControllerTests : IntegrationTests
 	private readonly WeatherStationBasicDTO weatherStationBasicDTO = new WeatherStationBasicDTO()
 	{
 		MacAddress = PhysicalAddress.Parse(validMacAddressStr),
-		GpsLocation = new Models.GpsLocation() { Longitude = 55.00000F, Latitude = 12.0000F },
+		GpsLocation = new Models.GpsLocationDto() { Longitude = 55.00000F, Latitude = 12.0000F },
 		Sensors = validSensorDatas
 
 	};
