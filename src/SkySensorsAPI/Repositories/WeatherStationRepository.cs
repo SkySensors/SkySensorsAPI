@@ -61,7 +61,7 @@ public class WeatherStationRepository(
 	public async Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
-			(con) => con.QueryAsync<SensorValue>("SELECT unix_time, value FROM sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime;",
+			(con) => con.QueryAsync<SensorValue>("SELECT unix_time, value FROM sensor_values WHERE mac_address = @MacAddress AND type = @Type AND unix_time >= @StartTime AND unix_time <= @EndTime ORDER BY unix_time;",
 			new
 			{
 				MacAddress = macAddress,
