@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using SkySensorsAPI.Models.DTO;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Json;
 using System.Net.NetworkInformation;
@@ -22,7 +21,7 @@ internal class WeatherStationControllerTests : IntegrationTests
 	private const string validMacAddressStr = "00-00-00-00-00-00";
 	private static readonly SensorDataDTO[] validSensorDatas =
 	[
-		new SensorDataDTO() {Type = Models.SensorType.Temperature}
+		new SensorDataDTO() { Type = Models.SensorType.Temperature }
 	];
 
 	private readonly WeatherStationBasicDTO weatherStationBasicDTO = new WeatherStationBasicDTO()
@@ -35,11 +34,13 @@ internal class WeatherStationControllerTests : IntegrationTests
 
 	private readonly MeasuredSensorValuesDTO[] validMeasuredSensorValues =
 	[
-		new MeasuredSensorValuesDTO() {
+		new MeasuredSensorValuesDTO()
+		{
 			MacAddress = PhysicalAddress.Parse(validMacAddressStr),
 			Type = Models.SensorType.Temperature,
 			SensorValues = [
-				new() {
+				new()
+				{
 					UnixTime = now.AddSeconds(2).ToUnixTimeSeconds(),
 					Value = 20
 				}
@@ -81,8 +82,6 @@ internal class WeatherStationControllerTests : IntegrationTests
 	public async Task GET_WeatherStation_WhenInputsAreValid_ResponseWith200()
 	{
 		// Arrange
-		//string macAddress = "90-A2-DA-10-55-88";
-
 		// Act
 		HttpResponseMessage response = await HttpClient.GetAsync(UrlPath + $"?macAddress={validMacAddressStr}&startTime={validStartTime}&endTime={validEndTime}");
 

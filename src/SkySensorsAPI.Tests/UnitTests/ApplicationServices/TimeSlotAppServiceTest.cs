@@ -10,7 +10,7 @@ using NSubstitute.ReturnsExtensions;
 
 namespace SkySensorsAPI.Tests.UnitTests.Services;
 
-internal class TimeSlotServiceTest
+internal class TimeSlotAppServiceTest
 {
 	private const int validSecondNumber = 9;
 	private const string validMacAddressStr = "00:00:00:00:00:00";

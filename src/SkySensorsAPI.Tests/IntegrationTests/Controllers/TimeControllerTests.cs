@@ -3,7 +3,7 @@ using System.Net;
 
 namespace SkySensorsAPI.Tests.IntegrationTests.Controllers;
 
-internal class TimeControllerTest : IntegrationTests
+internal class TimeControllerTests : IntegrationTests
 {
 	private const string UrlPath = "/api/time";
 
@@ -16,13 +16,13 @@ internal class TimeControllerTest : IntegrationTests
 		long rangeEnd = now.AddMinutes(1).ToUnixTimeMilliseconds();
 
 		// Act
-		HttpResponseMessage response = await HttpClient.GetAsync(UrlPath );
+		HttpResponseMessage response = await HttpClient.GetAsync(UrlPath);
 
 		// Assert
 		response.StatusCode.Should().Be(HttpStatusCode.OK);
 		string data = await response.Content.ReadAsStringAsync();
 		data.Should().NotBeNullOrEmpty();
-		
+
 		Assert.True(long.TryParse(data, out long unixTimeResponse));
 
 		unixTimeResponse.Should().BeInRange(rangeStart, rangeEnd);

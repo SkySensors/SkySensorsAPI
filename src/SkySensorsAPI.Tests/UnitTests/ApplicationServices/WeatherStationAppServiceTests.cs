@@ -61,7 +61,6 @@ internal class WeatherStationServiceAppTests
 	{
 
 		// Act and Assert
-
 		FormatException ex = Assert.ThrowsAsync<FormatException>(async () => await sut.GetWeatherStation(PhysicalAddress.Parse("123"), 1713355703952, 1713442103952, true))
 			?? throw new NullReferenceException();
 		_ = weatherStationRepository.Received(0).GetWeatherStation(validMacAddress);
@@ -93,7 +92,7 @@ internal class WeatherStationServiceAppTests
 			{
 				MacAddress = validMacAddress,
 				Type = SensorType.Temperature,
-				SensorValues = [new SensorValueDTO() { Value = 1, UnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() }]
+				SensorValues = [new SensorValueDTO(1, DateTimeOffset.UtcNow.ToUnixTimeSeconds())]
 			}
 		];
 

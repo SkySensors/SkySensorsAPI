@@ -21,6 +21,10 @@ public interface IWeatherStationRepository
 public class WeatherStationRepository(
 	IPostgreSqlInfrastureService postgreSqlService) : IWeatherStationRepository
 {
+	/// <summary>
+	/// Used to get weather station by mac address from database
+	/// </summary>
+	/// <returns>WeatherStation</returns>
 	public async Task<WeatherStation> GetWeatherStation(PhysicalAddress macAddress)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
@@ -28,12 +32,20 @@ public class WeatherStationRepository(
 			new { MacAddr = macAddress, NpgsqlDbType = NpgsqlDbType.MacAddr }));
 	}
 
+	/// <summary>
+	/// Used to get all weather stations from database
+	/// </summary>
+	/// <returns>collection of weather station</returns>
 	public async Task<IEnumerable<WeatherStation>> GetWeatherStations()
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
 			(con) => con.QueryAsync<WeatherStation>("SELECT mac_address, lon, lat FROM weather_stations;"));
 	}
 
+	/// <summary>
+	/// Used to get sensor by mac address from database
+	/// </summary>
+	/// <returns>collection of Sensor</returns>
 	public async Task<IEnumerable<Sensor>> GetSensorsByMacAddress(PhysicalAddress macAddress)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
@@ -45,6 +57,10 @@ public class WeatherStationRepository(
 				}));
 	}
 
+	/// <summary>
+	/// Used to get calibrated sensor values by mac address from database
+	/// </summary>
+	/// <returns>collection of calibrated SensorValue</returns>
 	public async Task<IEnumerable<SensorValue>> GetCalibratedSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
@@ -58,6 +74,10 @@ public class WeatherStationRepository(
 			}));
 	}
 
+	/// <summary>
+	/// Used to get sensor values by mac address from database
+	/// </summary>
+	/// <returns>collection of raw SensorValue</returns>
 	public async Task<IEnumerable<SensorValue>> GetSensorValuesByMacAddress(PhysicalAddress macAddress, string type, long startTime, long endTime)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
@@ -71,6 +91,9 @@ public class WeatherStationRepository(
 			}));
 	}
 
+	/// <summary>
+	/// Used to upsert weather station to database
+	/// </summary>
 	public async Task UpsertWeatherStation(PhysicalAddress macAddress, float lon, float lat)
 	{
 		int succeeded = await postgreSqlService.ExecuteQueryAsync(
@@ -84,6 +107,9 @@ public class WeatherStationRepository(
 
 	}
 
+	/// <summary>
+	/// Used to upsert weather station sensor to database
+	/// </summary>
 	public async Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
 	{
 		int succeeded = await postgreSqlService.ExecuteQueryAsync(
@@ -95,6 +121,9 @@ public class WeatherStationRepository(
 			   }));
 	}
 
+	/// <summary>
+	/// Used to insert SensorValues to database
+	/// </summary>
 	public async Task InsertSensorValues(SensorValue[] sensorValues)
 	{
 		await postgreSqlService.ExecuteQueryAsync((con) =>

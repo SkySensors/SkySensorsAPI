@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SkySensorsAPI.ApplicationServices;
 using SkySensorsAPI.Models.DTO;
-using System.Collections.Generic;
 using System.Net.NetworkInformation;
 
 namespace SkySensorsAPI.Controllers;

@@ -18,6 +18,10 @@ public interface IWeatherStationAppService
 public class WeatherStationAppService(
 	IWeatherStationRepository weatherStationRepository) : IWeatherStationAppService
 {
+	/// <summary>
+	/// Used to get weather station
+	/// </summary>
+	/// <returns>WeatherStationDTO</returns>
 	public async Task<WeatherStationDTO> GetWeatherStation(PhysicalAddress macAddress, long startTime, long endTime, bool isCalibrated)
 	{
 		if (startTime > endTime)
@@ -32,6 +36,10 @@ public class WeatherStationAppService(
 		return WeatherStationDTO.FromWeatherStation(weatherStation, measuredSensorValuesDTO);
 	}
 
+	/// <summary>
+	/// Used to get weather stations
+	/// </summary>
+	/// <returns>collection of WeatherStationDTO</returns>
 	public async Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime, bool isCalibrated)
 	{
 		if (startTime > endTime)
@@ -52,22 +60,35 @@ public class WeatherStationAppService(
 		return weatherStationsDTO;
 	}
 
+	/// <summary>
+	/// Used to get gps location and mac address for all weather stations
+	/// </summary>
+	/// <returns>collection of WeatherStationLocationAndMacDTO</returns>
 	public async Task<IEnumerable<WeatherStationLocationAndMacDTO>> GetWeatherStationLists()
 	{
 		IEnumerable<WeatherStation> weatherStations = await weatherStationRepository.GetWeatherStations();
 		return weatherStations.Select(w => WeatherStationLocationAndMacDTO.FromWeatherStation(w));
 	}
 
+	/// <summary>
+	/// Used to upsert weather station
+	/// </summary>
 	public async Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic)
 	{
 		await weatherStationRepository.UpsertWeatherStation(weatherStationBasic.MacAddress, weatherStationBasic.GpsLocation.Longitude, weatherStationBasic.GpsLocation.Latitude);
 	}
 
+	/// <summary>
+	/// Used to upsert weather station sensor
+	/// </summary>
 	public async Task UpsertWeatherStationSensor(PhysicalAddress macAddress, string type)
 	{
 		await weatherStationRepository.UpsertWeatherStationSensor(macAddress, type);
 	}
 
+	/// <summary>
+	/// Insert measured sensor values
+	/// </summary>
 	public async Task InsertMeasuredSensorValues(MeasuredSensorValuesDTO[] measuredSensorValues)
 	{
 		SensorValue[] sensorValues = measuredSensorValues.SelectMany(m => m.SensorValues.Select(v => new SensorValue()
@@ -90,14 +111,14 @@ public class WeatherStationAppService(
 		List<MeasuredSensorValuesDTO> measuredSensorValuesDTO = [];
 		foreach (Sensor sensor in sensors)
 		{
-			IEnumerable<SensorValue> sensorValues = isCalibrated 
+			IEnumerable<SensorValue> sensorValues = isCalibrated
 				? await weatherStationRepository.GetCalibratedSensorValuesByMacAddress(sensor.MacAddress, sensor.Type.ToString(), startTime, endTime)
 				: await weatherStationRepository.GetSensorValuesByMacAddress(sensor.MacAddress, sensor.Type.ToString(), startTime, endTime);
 			measuredSensorValuesDTO.Add(new MeasuredSensorValuesDTO()
 			{
 				Type = sensor.Type,
 				MacAddress = sensor.MacAddress,
-				SensorValues = sensorValues.Select(s => new SensorValueDTO { Value = s.Value, UnixTime = s.UnixTime }).ToList()
+				SensorValues = sensorValues.Select(s => new SensorValueDTO(s.UnixTime, s.Value)).ToList()
 			});
 		}
 		return measuredSensorValuesDTO;
