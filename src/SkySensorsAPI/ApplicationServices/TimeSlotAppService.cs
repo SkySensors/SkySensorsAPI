@@ -22,7 +22,7 @@ public class TimeSlotAppService(
 		// IF timeslot already exists, then return it
 		if (timeSlot != null)
 		{
-			return new TimeSlotDTO { SecondsNumber = timeSlot.SecondsNumber };
+			return new TimeSlotDTO { SecondsNumber = timeSlot.Value.SecondsNumber };
 		}
 
 		// If not, then find the least used timeslot
