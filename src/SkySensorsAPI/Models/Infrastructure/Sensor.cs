@@ -2,4 +2,4 @@
 
 namespace SkySensorsAPI.Models.Infrastructure;
 
-public record class Sensor(PhysicalAddress MacAddress, SensorType Type);
+public record struct Sensor(PhysicalAddress MacAddress, SensorType Type);

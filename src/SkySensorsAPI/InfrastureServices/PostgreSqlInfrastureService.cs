@@ -14,17 +14,22 @@ public interface IPostgreSqlInfrastureService
 
 public class PostgreSqlInfrastureService(IConfiguration configuration) : IPostgreSqlInfrastureService
 {
-	private string connectionStr = "Username=" + Environment.GetEnvironmentVariable("DB_USERNAME") + 
-		";Password=" + Environment.GetEnvironmentVariable("DB_PASS") + 
-		";Host=" + Environment.GetEnvironmentVariable("DB_HOST") + 
-		";Port=" + Environment.GetEnvironmentVariable("DB_PORT") + 
-		";Database=" + Environment.GetEnvironmentVariable("DB_NAME") + 
+	private readonly string connectionString = "Username=" + configuration.GetValue<string>("DB_USERNAME") +
+		";Password=" + configuration.GetValue<string>("DB_PASS") +
+		";Host=" + configuration.GetValue<string>("DB_HOST") +
+		";Port=" + configuration.GetValue<string>("DB_PORT") +
+		";Database=" + configuration.GetValue<string>("DB_NAME") +
 		";Pooling=true;Connection Lifetime=0;Application Name=SkySensorAPI";
+
+	/// <summary>
+	/// Used to execute PostgreSql query
+	/// </summary>
+	/// <returns>generic datatype</returns>
 	public async Task<T> ExecuteQueryAsync<T>(Func<IDbConnection, Task<T>> query)
 	{
 		DefaultTypeMap.MatchNamesWithUnderscores = true;
 		SqlMapper.AddTypeHandler(new NpgsqlTypeHandler<PhysicalAddress>(NpgsqlDbType.MacAddr));
-		using IDbConnection con = new NpgsqlConnection(connectionStr);
+		using IDbConnection con = new NpgsqlConnection(connectionString);
 		return await query(con);
 	}
 }

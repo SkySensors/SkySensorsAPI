@@ -3,15 +3,14 @@ using SkySensorsAPI.Models.Infrastructure;
 using SkySensorsAPI.Repositories;
 using System.Net.NetworkInformation;
 
-namespace SkySensorsAPI.ApplicationServices;
+namespace SkySensorsAPI.DomainServices;
 
-public interface ITimeSlotAppService
+public interface ITimeSlotDomainService
 {
 	public Task<TimeSlotDTO> UpsertTimeSlot(PhysicalAddress macAddress);
 }
 
-public class TimeSlotAppService(
-	ITimeSlotRepository timeSlotRepository) : ITimeSlotAppService
+public class TimeSlotDomainService(ITimeSlotRepository timeSlotRepository) : ITimeSlotDomainService
 {
 	public async Task<TimeSlotDTO> UpsertTimeSlot(PhysicalAddress macAddress)
 	{
@@ -19,10 +18,10 @@ public class TimeSlotAppService(
 		// Check if schedule already exists for this device
 		TimeSlot? timeSlot = await timeSlotRepository.GetMacAddressTimeSlot(macAddress);
 
-		// IF timeslot already exists, then return it
+		// If timeslot already exists, then return it
 		if (timeSlot != null)
 		{
-			return new TimeSlotDTO { SecondsNumber = timeSlot.SecondsNumber };
+			return new TimeSlotDTO { SecondsNumber = timeSlot.Value.SecondsNumber };
 		}
 
 		// If not, then find the least used timeslot

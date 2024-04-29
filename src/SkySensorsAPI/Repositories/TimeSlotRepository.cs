@@ -15,6 +15,10 @@ public interface ITimeSlotRepository
 public class TimeSlotRepository(
 	IPostgreSqlInfrastureService postgreSqlService) : ITimeSlotRepository
 {
+	/// <summary>
+	/// Used to get time slot by mac address from database
+	/// </summary>
+	/// <returns>TimeSlot?</returns>
 	public async Task<TimeSlot?> GetMacAddressTimeSlot(PhysicalAddress macAddress)
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
@@ -25,12 +29,19 @@ public class TimeSlotRepository(
 			   }));
 	}
 
+	/// <summary>
+	/// Used to get best time slot from database
+	/// </summary>
+	/// <returns>an integer which represents the second which the timeslot should be triegged at in a given inteval</returns>
 	public async Task<int> GetBestTimeSlot()
 	{
 		return await postgreSqlService.ExecuteQueryAsync(
 			   (con) => con.QueryFirstAsync<int>("SELECT get_possible_time_slot();"));
 	}
 
+	/// <summary>
+	/// Used to insert time slot to database
+	/// </summary>
 	public async Task InsertTimeSlot(PhysicalAddress macAddress, int secondsNumber)
 	{
 		await postgreSqlService.ExecuteQueryAsync(
