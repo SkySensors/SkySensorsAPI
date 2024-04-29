@@ -1,16 +1,16 @@
 ﻿using AutoFixture.NUnit3;
 using FluentAssertions;
 using NSubstitute;
-using SkySensorsAPI.ApplicationServices;
+using SkySensorsAPI.DomainServices;
 using SkySensorsAPI.Models;
 using SkySensorsAPI.Models.DTO;
 using SkySensorsAPI.Models.Infrastructure;
 using SkySensorsAPI.Repositories;
 using System.Net.NetworkInformation;
 
-namespace SkySensorsAPI.Tests.UnitTests.Services;
+namespace SkySensorsAPI.Tests.UnitTests.DomainServices;
 
-internal class WeatherStationServiceAppTests
+internal class WeatherStationServiceDomainTests
 {
 	private const string validMacAddressStr = "00:00:00:00:00:00";
 	private readonly PhysicalAddress validMacAddress = PhysicalAddress.Parse(validMacAddressStr);
@@ -35,7 +35,7 @@ internal class WeatherStationServiceAppTests
 	[Test, AutoDomainData]
 	public async Task GetWeatherStation_WhenEverythingIsValid_ReturnsWeatherStation(
 		[Frozen] IWeatherStationRepository weatherStationRepository,
-		WeatherStationAppService sut)
+		WeatherStationDomainService sut)
 	{
 		// Arrange
 		weatherStationRepository.GetWeatherStation(validMacAddress)
@@ -57,7 +57,7 @@ internal class WeatherStationServiceAppTests
 	[Test, AutoDomainData]
 	public void GetWeatherStation_WhenMacAddressIsInBadFormat_ThrowsException(
 	[Frozen] IWeatherStationRepository weatherStationRepository,
-	WeatherStationAppService sut)
+	WeatherStationDomainService sut)
 	{
 
 		// Act and Assert
@@ -69,7 +69,7 @@ internal class WeatherStationServiceAppTests
 	[Test, AutoDomainData]
 	public void GetWeatherStation_WhenStartDateIsLargerThanEndDate_ThrowsException(
 		[Frozen] IWeatherStationRepository weatherStationRepository,
-		WeatherStationAppService sut)
+		WeatherStationDomainService sut)
 	{
 		// Act and Assert
 		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStation(validMacAddress, 1713442103952, 1713355703952, true))
@@ -81,7 +81,7 @@ internal class WeatherStationServiceAppTests
 	[Test, AutoDomainData]
 	public async Task InsertMeasuredSensorValues_WhenEverythingIsValid_ReturnsVoid(
 		[Frozen] IWeatherStationRepository weatherStationAppService,
-		WeatherStationAppService sut)
+		WeatherStationDomainService sut)
 	{
 		// Arrange
 		weatherStationAppService.InsertSensorValues(validSensorValues.ToArray())
@@ -106,7 +106,7 @@ internal class WeatherStationServiceAppTests
 	[Test, AutoDomainData]
 	public async Task GetWeatherStations_WhenEverythingIsValid_ReturnsWeatherStations(
 		[Frozen] IWeatherStationRepository weatherStationRepository,
-		WeatherStationAppService sut)
+		WeatherStationDomainService sut)
 	{
 		// Arrange
 		weatherStationRepository.GetWeatherStations().Returns(new List<WeatherStation> { validWeatherStation });
@@ -128,7 +128,7 @@ internal class WeatherStationServiceAppTests
 	[Test, AutoDomainData]
 	public void GetWeatherStations_WhenStartDateIsLargerThanEndDate_ThrowsException(
 	[Frozen] IWeatherStationRepository weatherStationRepository,
-	WeatherStationAppService sut)
+	WeatherStationDomainService sut)
 	{
 		// Act and assert
 		ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetWeatherStations(1713442103952, 1713355703952, true))

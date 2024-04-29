@@ -1,5 +1,5 @@
 using Serilog;
-using SkySensorsAPI.ApplicationServices;
+using SkySensorsAPI.DomainServices;
 using SkySensorsAPI.InfrastureServices;
 using SkySensorsAPI.Middlewares;
 using SkySensorsAPI.Repositories;
@@ -12,8 +12,8 @@ Log.Logger = new LoggerConfiguration()
 try
 {
 	var builder = WebApplication.CreateBuilder(args);
-	builder.Services.AddSingleton<IWeatherStationAppService, WeatherStationAppService>();
-	builder.Services.AddSingleton<ITimeSlotAppService, TimeSlotAppService>();
+	builder.Services.AddSingleton<IWeatherStationDomainService, WeatherStationDomainService>();
+	builder.Services.AddSingleton<ITimeSlotDomainService, TimeSlotDomainService>();
 	builder.Services.AddSingleton<IPostgreSqlInfrastureService, PostgreSqlInfrastureService>();
 	builder.Services.AddSingleton<IWeatherStationRepository, WeatherStationRepository>();
 	builder.Services.AddSingleton<ITimeSlotRepository, TimeSlotRepository>();

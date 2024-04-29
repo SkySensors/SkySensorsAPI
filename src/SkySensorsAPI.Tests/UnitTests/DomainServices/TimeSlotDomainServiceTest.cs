@@ -1,5 +1,5 @@
 ﻿using AutoFixture.NUnit3;
-using SkySensorsAPI.ApplicationServices;
+using SkySensorsAPI.DomainServices;
 using SkySensorsAPI.Models.DTO;
 using SkySensorsAPI.Models.Infrastructure;
 using SkySensorsAPI.Repositories;
@@ -8,9 +8,9 @@ using NSubstitute;
 using FluentAssertions;
 using NSubstitute.ReturnsExtensions;
 
-namespace SkySensorsAPI.Tests.UnitTests.Services;
+namespace SkySensorsAPI.Tests.UnitTests.DomainServices;
 
-internal class TimeSlotAppServiceTest
+internal class TimeSlotDomainServiceTest
 {
 	private const int validSecondNumber = 9;
 	private const string validMacAddressStr = "00:00:00:00:00:00";
@@ -21,7 +21,7 @@ internal class TimeSlotAppServiceTest
 	[Test, AutoDomainData]
 	public async Task UpsertTimeSlot_WhenTimeSlotAlreadyExists_ReturnsTimeSlotDTO(
 	[Frozen] ITimeSlotRepository timeSlotRepository,
-	TimeSlotAppService sut)
+	TimeSlotDomainService sut)
 	{
 		// Arrange
 		timeSlotRepository.GetMacAddressTimeSlot(validMacAddress)
@@ -42,7 +42,7 @@ internal class TimeSlotAppServiceTest
 	[Test, AutoDomainData]
 	public async Task UpsertTimeSlot_WhenTimeSlotNotExists_ReturnsTimeSlotDTO(
 	[Frozen] ITimeSlotRepository timeSlotRepository,
-	TimeSlotAppService sut)
+	TimeSlotDomainService sut)
 	{
 		// Arrange
 		timeSlotRepository.GetMacAddressTimeSlot(validMacAddress)
