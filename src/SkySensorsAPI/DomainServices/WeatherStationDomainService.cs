@@ -9,7 +9,7 @@ public interface IWeatherStationDomainService
 {
 	public Task<WeatherStationDTO> GetWeatherStation(PhysicalAddress macAddress, long startTime, long endTime, bool isCalibrated);
 	public Task<List<WeatherStationDTO>> GetWeatherStations(long startTime, long endTime, bool isCalibrated);
-	public Task<IEnumerable<WeatherStationLocationAndMacDTO>> GetWeatherStationLists();
+	public Task<IEnumerable<WeatherStationLocationAndMacDTO>> GetAllLocationsAndMacAddresses();
 	public Task UpsertWeatherStation(WeatherStationBasicDTO weatherStationBasic);
 	public Task InsertMeasuredSensorValues(MeasuredSensorValuesDTO[] measuredSensorValues);
 }
@@ -59,7 +59,7 @@ public class WeatherStationDomainService(IWeatherStationRepository weatherStatio
 	/// Used to get gps location and mac address for all weather stations
 	/// </summary>
 	/// <returns>collection of WeatherStationLocationAndMacDTO</returns>
-	public async Task<IEnumerable<WeatherStationLocationAndMacDTO>> GetWeatherStationLists()
+	public async Task<IEnumerable<WeatherStationLocationAndMacDTO>> GetAllLocationsAndMacAddresses()
 	{
 		IEnumerable<WeatherStation> weatherStations = await weatherStationRepository.GetWeatherStations();
 		return weatherStations.Select(WeatherStationLocationAndMacDTO.FromWeatherStation);

@@ -44,7 +44,7 @@ public class WeatherStationController(
 	[HttpGet("list")]
 	public async Task<ActionResult<IEnumerable<WeatherStationLocationAndMacDTO>>> GetAllLocationsAndMacAddresses()
 	{
-		IEnumerable<WeatherStationLocationAndMacDTO> weatherStations = await weatherStationDomainService.GetWeatherStationLists();
+		IEnumerable<WeatherStationLocationAndMacDTO> weatherStations = await weatherStationDomainService.GetAllLocationsAndMacAddresses();
 		return weatherStations == null ? NotFound() : Ok(weatherStations);
 	}
 }
